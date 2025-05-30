@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 374a4376c3db3e341832a000b6b29218, type: 3}
+  m_Name: Cia
+  m_EditorClassIdentifier: 
+  characterName: CIA
+  characterID: 479ceb76-21ce-11f0-af55-42010a7be01a
+  npcPrefab: {fileID: 3573649426880134448, guid: 584d3435c0613934da93236d728c453f,
+    type: 3}

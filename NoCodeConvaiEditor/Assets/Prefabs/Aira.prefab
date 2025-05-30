@@ -1,0 +1,677 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2941753701789808527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1616904196010011682}
+  - component: {fileID: 4803772239942064502}
+  m_Layer: 0
+  m_Name: Aira
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1616904196010011682
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2941753701789808527}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 9073833339767520642}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4803772239942064502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2941753701789808527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d725302db56e2934db47ace4dc8bcb31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterId: 
+  highlightRenderer: {fileID: 3637181542522173652}
+--- !u!1001 &8819739280760707689
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1616904196010011682}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      propertyPath: m_Name
+      value: Aira
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4925101720750237299}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5524760683156954646}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7711558183858347618}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1602979288886115348}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6070655338044660022}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2363795620659172934}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9076003803586618750}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3152910243571130801}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4188236534621695192}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 74480866631733389}
+  m_SourcePrefab: {fileID: 100100000, guid: ad82ae8759e49034e838fcc705a8c1f8, type: 3}
+--- !u!137 &3637181542522173652 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5197118176682910397, guid: ad82ae8759e49034e838fcc705a8c1f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 8819739280760707689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8549921115403724600 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 8819739280760707689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4925101720750237299
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: ee5b4be76dc64564ca28329f077f16b8, type: 2}
+  m_Controller: {fileID: 9100000, guid: c25d0eaa9cc0b3e48bee6c7cbf937a67, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!82 &5524760683156954646
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7711558183858347618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b38e4bc919e1f040ba78aea7472893e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Cia
+  characterID: 479ceb76-21ce-11f0-af55-42010a7be01a
+  sessionID: -1
+  isCharacterActive: 0
+  actionsHandler: {fileID: 0}
+  convaiLipSync: {fileID: 0}
+  isCharacterTalking: 0
+  initializeSessionID: 0
+  playerInteractionManager: {fileID: 0}
+  narrativeDesignManager: {fileID: 0}
+  onTriggerSent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1602979288886115348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d56bc33052944e0aba5a0fe7073c3ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sectionChangeEventsDataList:
+  - id: 37fc4f40-c045-11ee-ab27-42010a40000f
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
+          m_MethodName: UpdateCurrentTarget
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
+          m_MethodName: UpdateState
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: d7bc7988-c040-11ee-852d-42010a40000f
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
+          m_MethodName: UpdateCurrentTarget
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
+          m_MethodName: UpdateState
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: d8ad0f38-c040-11ee-abea-42010a40000f
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: d6de3042-c040-11ee-9856-42010a40000f
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: da788202-c040-11ee-b025-42010a40000f
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: 8ef4c954-224a-11f0-8339-42010a7be01a
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: 8d1ab3dc-224a-11f0-bb02-42010a7be01a
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: 010355f0-224c-11f0-ab95-42010a7be01a
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: eac75320-2243-11f0-99c7-42010a7be01a
+    onSectionStart:
+      m_PersistentCalls:
+        m_Calls: []
+    onSectionEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  sectionDataList:
+  - sectionId: 8ef4c954-224a-11f0-8339-42010a7be01a
+    sectionName: Onboarding Use case Section
+    behaviorTreeConstants: 
+    objective: "Tell the user how edifyer.io is the best solution for creating immersive
+      hyper-personalized onboarding solutions and ask if the user has any questions
+      regarding their use case.\n\nAnswer all onboarding use case and edifyer related
+      questions of the user. \n\nIf the user's response is not an answer to the above
+      question, then either answer the question or reply appropriately to the user's
+      comment, and then ask them if they have any other questions related to the
+      platform capabilities or any specific use case. "
+    characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
+  - sectionId: 8d1ab3dc-224a-11f0-bb02-42010a7be01a
+    sectionName: Training use case Section
+    behaviorTreeConstants: 
+    objective: "Tell the user how edifyer.io is the best solution for creating immersive
+      hyper-personalized training solutions and ask if the user has any questions
+      regarding their use case.\n\nAnswer all use case and edifyer related questions
+      of the user. \n\nIf the user's response is not an answer to the above question,
+      then either answer the question or reply appropriately to the user's comment,
+      and then ask them if they have any other questions related to the platform
+      capabilities or any specific use case. "
+    characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
+  - sectionId: 010355f0-224c-11f0-ab95-42010a7be01a
+    sectionName: End Experience
+    behaviorTreeConstants: 
+    objective: Say to the user, "Alright! I hope you have got a fair understanding
+      of edifyer.io. If, in the future, you have any questions or would like to discuss
+      any particular feature or use case, dont hesitate to reach out to our team.
+      It was great showing you around. Adios, until next time!"
+    characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
+  - sectionId: eac75320-2243-11f0-99c7-42010a7be01a
+    sectionName: Reception Section
+    behaviorTreeConstants: 
+    objective: "Say this paragraph to the user, \u201CWelcome to \"edifyer.io\" -
+      a Conversational AI-powered no-code enterprise metaverse platform for L&D!
+      I\u2019m Cia, your guide in this intelligent L&D universe. Which specific use
+      case would you like to explore today, Onboarding or Training?\"\n\nIf the user's
+      response is not an answer to the above question, then reply appropriately to
+      the user. Then ask the user, \"So, which specific use case are you looking
+      forward to explore today?\""
+    characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
+  triggerDataList:
+  - triggerId: d0d2b624-2259-11f0-a594-42010a7be01a
+    triggerName: Welcome Trigger
+    triggerMessage: Welcome to Edifyer.io
+    destinationSection: eac75320-2243-11f0-99c7-42010a7be01a
+    characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
+--- !u!114 &6070655338044660022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004880e93e7151e479613b64df017303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 2
+  targetDistanceThreshold: 1
+  rotationSpeed: 30
+--- !u!114 &2363795620659172934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47bf09eafaaeed940ab9e5531a64790c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <TargetObject>k__BackingField: {fileID: 0}
+  trackingDistance: 10
+  turnSpeed: 5
+  bodyLookAtWeight: 0.6
+  headLookAtWeight: 0.8
+  eyesLookAtWeight: 1
+  lookAway: 0
+--- !u!114 &9076003803586618750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b64bad04a93295642a4486f9899f8734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  faceSkinnedMeshRenderer: {fileID: 0}
+  indexOfLeftEyelid: 65
+  indexOfRightEyelid: 66
+  maxBlendshapeWeight: 1
+  minBlinkDuration: 0.2
+  maxBlinkDuration: 0.3
+  minBlinkInterval: 2
+  maxBlinkInterval: 3
+--- !u!136 &3152910243571130801
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!82 &4188236534621695192
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1.5
+  MaxDistance: 10
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.2777778
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &74480866631733389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8549921115403724600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d526d030017744949b7412a85e6134d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  narrativeDesignKeys:
+  - name: TimeOfDay
+    value: Morning
+--- !u!4 &9073833339767520642 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 8819739280760707689}
+  m_PrefabAsset: {fileID: 0}
