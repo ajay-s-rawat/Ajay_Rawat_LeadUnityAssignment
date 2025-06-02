@@ -9,11 +9,10 @@ namespace Convai.Scripts.Runtime.UI
     /// </summary>
     public class UISettingsPanel : MonoBehaviour
     {
-        [field: Header("References")]
-        [field: SerializeField]
-        public Button SaveChangesButton { get; private set; }
+        [Header("References")] [SerializeField]
+        private Button _saveChangesButton;
 
-        [field: SerializeField] public Button SettingsPanelExitButton { get; private set; }
+        [SerializeField] private Button _settingsPanelExitButton;
         [SerializeField] private CanvasGroup _panelCanvasGroup;
 
         /// <summary>
@@ -42,8 +41,8 @@ namespace Convai.Scripts.Runtime.UI
             _uiAppearanceSettings = GetComponent<UIAppearanceSettings>();
 
             // Attach event listeners to UI buttons
-            SaveChangesButton.onClick.AddListener(SaveChanges);
-            SettingsPanelExitButton.onClick.AddListener(delegate { ToggleSettingsPanel(false); });
+            _saveChangesButton.onClick.AddListener(SaveChanges);
+            _settingsPanelExitButton.onClick.AddListener(delegate { ToggleSettingsPanel(false); });
         }
 
         private void OnEnable()

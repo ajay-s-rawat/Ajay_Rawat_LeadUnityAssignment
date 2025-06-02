@@ -1,15 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Convai.Scripts.Runtime.Addons;
 using Convai.Scripts.Runtime.Attributes;
 using Convai.Scripts.Runtime.Core;
-using Convai.Scripts.Runtime.LoggerSystem;
-using Convai.Scripts.Runtime.PlayerStats;
 using UnityEngine;
 
 namespace Convai.Scripts.Runtime.UI
 {
+    [Serializable]
+    public class Character
+    {
+        [Header("Character settings")] [Tooltip("Convai NPC Game Object")]
+        public ConvaiNPC characterGameObject;
+
+        [ReadOnly] [Tooltip("Display name of the NPC")]
+        public string characterName = "Character";
+
+        [ColorUsage(true)] [Tooltip("Color of the NPC text. Alpha value will be ignored.")] [SerializeField]
+        private Color characterTextColor = Color.red;
+
+        public Color CharacterTextColor
+        {
+            get => characterTextColor;
+            set => characterTextColor = value;
+        }
+    }
+
     [AddComponentMenu("Convai/Chat UI Handler")]
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-100)]
@@ -37,14 +53,13 @@ namespace Convai.Scripts.Runtime.UI
         [Header("Character List")] [Tooltip("List of characters.")]
         public List<Character> characters = new();
 
+        [Header("Player settings")] [Tooltip("Display name of the player.")]
+        public string playerName = "Player";
+
         [ColorUsage(true)] [Tooltip("Color of the player's text. Alpha value will be ignored.")]
         public Color playerTextColor = Color.white;
 
-        private ConvaiPlayerDataSO _convaiPlayerData;
-
         private IChatUI _currentUIImplementation;
-
-        private bool _hasPlayerData;
         public static ConvaiChatUIHandler Instance { get; private set; }
 
         public Dictionary<UIType, IChatUI> GetUIAppearances { get; } = new();
@@ -54,7 +69,8 @@ namespace Convai.Scripts.Runtime.UI
             if (Instance != null)
             {
                 // Log a warning and destroy the duplicate instance
-                ConvaiLogger.DebugLog("<color=red> There's More Than One ConvaiChatUIHandler </color> " + transform + " - " + Instance, ConvaiLogger.LogCategory.UI);
+                Debug.Log("<color=red> There's More Than One ConvaiChatUIHandler </color> " + transform + " - " +
+                          Instance);
                 Destroy(gameObject);
                 return;
             }
@@ -64,8 +80,6 @@ namespace Convai.Scripts.Runtime.UI
 
             ValidateUIPrefabs();
             InitializeUIStrategies();
-
-            _hasPlayerData = ConvaiPlayerDataSO.GetPlayerData(out _convaiPlayerData);
         }
 
         // Subscribe to events when this component is enabled.
@@ -95,8 +109,14 @@ namespace Convai.Scripts.Runtime.UI
 
         private void OnValidate()
         {
-            UpdateCharacterList();
-            RemoveDuplicateCharacters();
+            try
+            {
+                UpdateCharacterList();
+            }
+            catch
+            {
+                RemoveDuplicateCharacters();
+            }
         }
 
 
@@ -181,7 +201,8 @@ namespace Convai.Scripts.Runtime.UI
                 IChatUI uiComponent = uiPrefab.GetComponent<IChatUI>();
                 if (uiComponent == null)
                 {
-                    ConvaiLogger.Warn($"The provided prefab for {uiType} does not have a component that implements IChatUI.", ConvaiLogger.LogCategory.UI);
+                    Debug.LogError(
+                        $"The provided prefab for {uiType} does not have a component that implements IChatUI.");
                     return;
                 }
 
@@ -190,7 +211,7 @@ namespace Convai.Scripts.Runtime.UI
             }
             catch (Exception ex)
             {
-                ConvaiLogger.Exception($"An error occurred while initializing the UI: {ex.Message}", ConvaiLogger.LogCategory.UI);
+                Debug.LogError($"An error occurred while initializing the UI: {ex.Message}");
             }
         }
 
@@ -202,16 +223,14 @@ namespace Convai.Scripts.Runtime.UI
         public void SendCharacterText(string charName, string text)
         {
             Character character = characters.Find(c => c.characterName == charName);
+            Debug.Log("LHS : " + character + "          RHS : " + charName);
             if (character == null)
             {
-                ConvaiLogger.Warn($"No character found named {charName}", ConvaiLogger.LogCategory.Character);
+                Debug.LogError($"No character found named {charName}");
                 return;
             }
 
-            if (!ConvaiNPCManager.Instance.CheckForNPCToNPCConversation(character.characterGameObject))
-                _currentUIImplementation?.SendCharacterText(charName, text, character.CharacterTextColor);
-            else
-                ConvaiLogger.DebugLog($"Character {charName} is in conversation with another NPC.", ConvaiLogger.LogCategory.Character);
+            _currentUIImplementation?.SendCharacterText(charName, text, character.CharacterTextColor);
         }
 
         /// <summary>
@@ -220,7 +239,7 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="text">The text to send.</param>
         public void SendPlayerText(string text)
         {
-            _currentUIImplementation?.SendPlayerText(_hasPlayerData ? _convaiPlayerData.PlayerName : _convaiPlayerData.DefaultPlayerName, text, playerTextColor);
+            _currentUIImplementation?.SendPlayerText(playerName, text, playerTextColor);
         }
 
         /// <summary>
@@ -235,7 +254,7 @@ namespace Convai.Scripts.Runtime.UI
             }
             catch (InvalidOperationException ex)
             {
-                ConvaiLogger.Exception($"An error occurred while validating UI prefabs: {ex.Message}", ConvaiLogger.LogCategory.UI);
+                Debug.LogError($"An error occurred while validating UI prefabs: {ex.Message}");
             }
         }
 
@@ -247,7 +266,7 @@ namespace Convai.Scripts.Runtime.UI
         {
             if (!GetUIAppearances.ContainsKey(newUIType))
             {
-                ConvaiLogger.Warn($"The UI type {newUIType} is not available.", ConvaiLogger.LogCategory.UI);
+                Debug.LogError($"The UI type {newUIType} does not exist in the GetUIAppearances dictionary.");
                 return;
             }
 
@@ -286,28 +305,6 @@ namespace Convai.Scripts.Runtime.UI
         public void AddCharacter(Character newCharacter)
         {
             characters.Add(newCharacter);
-        }
-    }
-}
-
-namespace Convai.Scripts.Runtime.Addons
-{
-    [Serializable]
-    public class Character
-    {
-        [Header("Character settings")] [Tooltip("Convai NPC Game Object")]
-        public ConvaiNPC characterGameObject;
-
-        [ReadOnly] [Tooltip("Display name of the NPC")]
-        public string characterName = "Character";
-
-        [ColorUsage(true)] [Tooltip("Color of the NPC text. Alpha value will be ignored.")] [SerializeField]
-        private Color characterTextColor = Color.red;
-
-        public Color CharacterTextColor
-        {
-            get => characterTextColor;
-            set => characterTextColor = value;
         }
     }
 }

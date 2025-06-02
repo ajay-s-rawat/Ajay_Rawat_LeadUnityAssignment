@@ -9,9 +9,9 @@ namespace Convai.Scripts.Runtime.UI
     /// </summary>
     public class QuestionAnswerUI : ChatUIBase
     {
-        private Message _answer;
+        private TextMeshProUGUI _answerText;
         private GameObject _feedbackButtons;
-        private Message _question;
+        private TextMeshProUGUI _questionText;
 
         /// <summary>
         ///     Initializes the UI with the provided prefab.
@@ -20,18 +20,11 @@ namespace Convai.Scripts.Runtime.UI
         public override void Initialize(GameObject uiPrefab)
         {
             UIInstance = Instantiate(uiPrefab);
-            _question = new Message
-            {
-                SenderTextObject = UIInstance.transform.Find("Background").Find("Question").Find("Sender").GetComponent<TMP_Text>(),
-                MessageTextObject = UIInstance.transform.Find("Background").Find("Question").Find("Text").GetComponent<TMP_Text>()
-            };
-            _answer = new Message
-            {
-                SenderTextObject = UIInstance.transform.Find("Background").Find("Answer").Find("Sender").GetComponent<TMP_Text>(),
-                MessageTextObject = UIInstance.transform.Find("Background").Find("Answer").Find("AnswerText").Find("Text").GetComponent<TMP_Text>()
-            };
+            _questionText = UIInstance.transform.Find("Background").Find("QuestionText")
+                .GetComponent<TextMeshProUGUI>();
+            _answerText = UIInstance.transform.Find("Background").Find("AnswerText").GetComponent<TextMeshProUGUI>();
             UIInstance.SetActive(false);
-            _feedbackButtons = _answer.MessageTextObject.transform.GetChild(0).gameObject;
+            _feedbackButtons = _answerText.transform.GetChild(0).gameObject;
         }
 
         /// <summary>
@@ -42,14 +35,10 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="characterTextColor">The color associated with the character.</param>
         public override void SendCharacterText(string charName, string text, Color characterTextColor)
         {
-            if (string.IsNullOrEmpty(text)) return;
-
-            if (_answer != null)
+            if (_answerText != null)
             {
                 _feedbackButtons.SetActive(false);
-                _answer.SenderTextObject.text = FormatSpeakerName(charName, characterTextColor);
-                _answer.MessageTextObject.text = text;
-                _answer.RTLUpdate();
+                _answerText.text = FormatDialogueText(charName, text, characterTextColor);
                 _feedbackButtons.SetActive(true);
             }
         }
@@ -62,25 +51,24 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="playerTextColor">The color associated with the player.</param>
         public override void SendPlayerText(string playerName, string text, Color playerTextColor)
         {
-            if (_question != null)
+            if (_questionText != null)
             {
-                _question.SenderTextObject.text = FormatSpeakerName(playerName, playerTextColor);
-                _question.MessageTextObject.text = text;
-                _answer.RTLUpdate();
+                _questionText.text = FormatDialogueText(playerName, text, playerTextColor);
                 _feedbackButtons.SetActive(false);
             }
         }
 
         /// <summary>
-        ///     Formats the speaker's name with the color tag
+        ///     Formats the dialogue text with the speaker's name and color.
         /// </summary>
         /// <param name="speakerName">The name of the speaker.</param>
+        /// <param name="text">The text spoken by the speaker.</param>
         /// <param name="speakerColor">The color associated with the speaker.</param>
-        /// <returns>Formatted speaker name.</returns>
-        private string FormatSpeakerName(string speakerName, Color speakerColor)
+        /// <returns>Formatted dialogue text.</returns>
+        private string FormatDialogueText(string speakerName, string text, Color speakerColor)
         {
             string colorHex = ColorUtility.ToHtmlStringRGBA(speakerColor);
-            return $"<color=#{colorHex}>{speakerName}</color>: ";
+            return $"<color=#{colorHex}>{speakerName}</color>: {text}";
         }
     }
 }

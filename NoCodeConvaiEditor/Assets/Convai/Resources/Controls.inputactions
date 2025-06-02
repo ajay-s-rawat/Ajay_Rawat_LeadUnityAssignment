@@ -69,15 +69,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ToggleChat",
-                    "type": "Button",
-                    "id": "35745f7d-43f1-4748-863e-5b3717499377",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ToggleSettings",
                     "type": "Button",
                     "id": "2feff8e6-737d-4f11-892e-60a1eedbe5b8",
@@ -90,6 +81,15 @@
                     "name": "CursorUnlock",
                     "type": "Button",
                     "id": "b140b6bf-eff7-4213-a43d-47c7c4f9f492",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleChat",
+                    "type": "Button",
+                    "id": "b9697f09-5fee-41f7-a5d7-63ed0fae7d50",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -210,7 +210,7 @@
                 {
                     "name": "",
                     "id": "33c7b6d1-867b-4aca-9060-b8aea01e3721",
-                    "path": "<Keyboard>/f10",
+                    "path": "<Keyboard>/0",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard & Mouse",
@@ -297,22 +297,22 @@
                 },
                 {
                     "name": "",
-                    "id": "d927d629-af22-41c8-9b0a-3b8e304f3b54",
+                    "id": "8cec5865-2d9d-41af-bb65-ee24cf627473",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard & Mouse",
+                    "groups": "",
                     "action": "ToggleChat",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "5262ea16-6f64-4b42-8383-ba8d54cbf2c5",
+                    "id": "b5da9813-3a92-4615-b59b-b1856b870d68",
                     "path": "<Keyboard>/numpadEnter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard & Mouse",
+                    "groups": "",
                     "action": "ToggleChat",
                     "isComposite": false,
                     "isPartOfComposite": false

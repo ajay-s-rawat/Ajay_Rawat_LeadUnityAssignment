@@ -2626,14 +2626,17 @@ GameObject:
   - component: {fileID: 6667240487094547286}
   - component: {fileID: 623432826458601461}
   - component: {fileID: 2116678390358549729}
+  - component: {fileID: 6997586556901072132}
   - component: {fileID: 8688518770891932318}
-  - component: {fileID: 3598563634252785276}
-  - component: {fileID: 6286220254917385039}
   - component: {fileID: 3361706585886169274}
   - component: {fileID: 1474089814029031426}
   - component: {fileID: 2592531181684873810}
   - component: {fileID: 368481086161239025}
-  m_Layer: 0
+  - component: {fileID: 3990743259506631088}
+  - component: {fileID: 5110566986097528700}
+  - component: {fileID: 8631560450154572247}
+  - component: {fileID: 9044182386084759125}
+  m_Layer: 6
   m_Name: 63f8996d9dc8b8dcb3aff263
   m_TagString: Character
   m_Icon: {fileID: 0}
@@ -2676,7 +2679,7 @@ Animator:
   m_GameObject: {fileID: 6875522479810710320}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ee5b4be76dc64564ca28329f077f16b8, type: 2}
-  m_Controller: {fileID: 9100000, guid: c25d0eaa9cc0b3e48bee6c7cbf937a67, type: 2}
+  m_Controller: {fileID: 9100000, guid: f5248f05624463e4db81a8b35ac98aa7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2702,16 +2705,32 @@ MonoBehaviour:
   characterName: Missy
   characterID: c7bf19f4-8aae-11ee-9d82-42010a40000e
   sessionID: -1
-  isCharacterActive: 0
-  actionsHandler: {fileID: 0}
-  convaiLipSync: {fileID: 0}
   isCharacterTalking: 0
-  initializeSessionID: 1
+  isCharacterActive: 0
   playerInteractionManager: {fileID: 0}
-  narrativeDesignManager: {fileID: 0}
   onTriggerSent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6997586556901072132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875522479810710320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f30d055a1cd6af4091330f082286c9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlendshapeType: 1
+  HeadSkinnedMeshRenderer: {fileID: 0}
+  TeethSkinnedMeshRenderer: {fileID: 0}
+  TongueSkinnedMeshRenderer: {fileID: 0}
+  jawBone: {fileID: 0}
+  tongueBone: {fileID: 0}
+  tongueBoneOffset: {x: -0.01, y: 0.015, z: 0}
+  firstIndex: 0
 --- !u!114 &8688518770891932318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2729,25 +2748,13 @@ MonoBehaviour:
     onSectionStart:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 3598563634252785276}
-          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
-          m_MethodName: UpdateCurrentTarget
+        - m_Target: {fileID: 5110566986097528700}
+          m_TargetAssemblyTypeName: NarrativeDesignTourController, Assembly-CSharp
+          m_MethodName: MoveToTargetPoint
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 3598563634252785276}
-          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
-          m_MethodName: UpdateState
-          m_Mode: 3
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -2760,25 +2767,13 @@ MonoBehaviour:
     onSectionStart:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 3598563634252785276}
-          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
-          m_MethodName: UpdateCurrentTarget
+        - m_Target: {fileID: 5110566986097528700}
+          m_TargetAssemblyTypeName: NarrativeDesignTourController, Assembly-CSharp
+          m_MethodName: MoveToTargetPoint
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 3598563634252785276}
-          m_TargetAssemblyTypeName: NPCBehaviorController, Assembly-CSharp
-          m_MethodName: UpdateState
-          m_Mode: 3
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -2830,10 +2825,12 @@ MonoBehaviour:
   - sectionId: d6de3042-c040-11ee-9856-42010a40000f
     sectionName: Welcome Section
     behaviorTreeConstants: 
-    objective: <speak>Welcome to the International History Museum. My name is Missy
-      and I will be your guide and host. Would you like to take a tour of the museum?
-      If you have any questions or concerns, feel free to ask and I will be happy
-      to assist you. </speak>
+    objective: '<speak>Wish the user according to the {TimeOfDay}
+
+      Welcome
+      to the International History Museum.  My name is Missy and I will be your guide
+      and host. Would you like to take a tour of the museum? If you have any questions
+      or concerns, feel free to ask and I will be happy to assist you. </speak>'
     characterId: c7bf19f4-8aae-11ee-9d82-42010a40000e
   - sectionId: da788202-c040-11ee-b025-42010a40000f
     sectionName: End Tour Section
@@ -2857,53 +2854,6 @@ MonoBehaviour:
     triggerMessage: Player goes to other monument
     destinationSection: da788202-c040-11ee-b025-42010a40000f
     characterId: c7bf19f4-8aae-11ee-9d82-42010a40000e
---- !u!114 &3598563634252785276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6875522479810710320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 004880e93e7151e479613b64df017303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  targetDistanceThreshold: 1
-  rotationSpeed: 30
---- !u!114 &6286220254917385039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6875522479810710320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88bce56f6985ef84f8835a0152628fa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceModel: 3
-  <FacialExpressionData>k__BackingField:
-    Head:
-      Renderer: {fileID: 0}
-      VisemeEffectorsList: {fileID: 0}
-      WeightBounds: {x: 0, y: 1}
-    Teeth:
-      Renderer: {fileID: 0}
-      VisemeEffectorsList: {fileID: 0}
-      WeightBounds: {x: 0, y: 1}
-    Tongue:
-      Renderer: {fileID: 0}
-      VisemeEffectorsList: {fileID: 0}
-      WeightBounds: {x: 0, y: 1}
-    JawBoneEffector: {fileID: 0}
-    TongueBoneEffector: {fileID: 0}
-    JawBone: {fileID: 0}
-    TongueBone: {fileID: 0}
-  <WeightBlendingPower>k__BackingField: 0.5
-  characterEmotions: []
 --- !u!114 &3361706585886169274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2935,7 +2885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b64bad04a93295642a4486f9899f8734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faceSkinnedMeshRenderer: {fileID: 0}
+  faceSkinnedMeshRenderer: {fileID: 107316367245760781}
   indexOfLeftEyelid: 65
   indexOfRightEyelid: 66
   maxBlendshapeWeight: 1
@@ -3062,6 +3012,85 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!195 &3990743259506631088
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875522479810710320}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.22
+  m_Speed: 1.685
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0.25
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 0
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &5110566986097528700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875522479810710320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2be7b4cd2db1444bc0713ff208de08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8631560450154572247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875522479810710320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e2a73d8df3db744979a04b4dc719e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionMethods:
+  - action: Move To
+    animationName: 
+    actionChoice: 3
+  - action: Pick Up
+    animationName: 
+    actionChoice: 4
+  - action: Dance
+    animationName: Dance
+    actionChoice: 0
+  - action: Drop
+    animationName: 
+    actionChoice: 5
+  - action: Jump
+    animationName: 
+    actionChoice: 1
+  actionResponseList: []
+--- !u!114 &9044182386084759125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875522479810710320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d526d030017744949b7412a85e6134d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  narrativeDesignKeyController:
+    narrativeDesignKeys:
+    - name: TimeOfDay
+      value: Morning
 --- !u!1 &6990201456691248769
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,6 @@ using Convai.Scripts.Runtime.Core;
 using Convai.Scripts.Runtime.UI;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
-using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEngine.InputSystem;
 #endif
 
@@ -39,14 +38,13 @@ namespace Convai.Scripts.Runtime.Addons
         {
             try
             {
-                if (!input.action.WasPressedThisFrame() || UIUtilities.IsAnyInputFieldFocused() || ConvaiNPCManager.Instance.activeConvaiNPC == null ||
-                    ConvaiNPCManager.Instance.CheckForNPCToNPCConversation(ConvaiNPCManager.Instance.activeConvaiNPC))
-                    if (ConvaiNPCManager.Instance.activeConvaiNPC == null && ConvaiNPCManager.Instance.nearbyNPC == null)
+                if (!input.action.WasPressedThisFrame() || UIUtilities.IsAnyInputFieldFocused() || ConvaiNPCManager.Instance.activeConvaiNPC == null)
+                    if (ConvaiNPCManager.Instance.activeConvaiNPC == null)
                         NotificationSystemHandler.Instance.NotificationRequest(NotificationType.NotCloseEnoughForConversation);
             }
             catch (NullReferenceException)
             {
-                ConvaiLogger.DebugLog("No active NPC available for conversation", ConvaiLogger.LogCategory.UI);
+                Debug.Log("No active NPC available for conversation");
             }
         }
 #elif ENABLE_LEGACY_INPUT_MANAGER

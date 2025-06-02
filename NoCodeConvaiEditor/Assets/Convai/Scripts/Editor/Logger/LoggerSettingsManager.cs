@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEditor;
@@ -13,6 +13,16 @@ namespace Convai.Scripts.Editor.Logger
     {
         // Path to the LoggerSettings asset
         private const string SETTINGS_PATH = "Assets/Convai/Resources/LoggerSettings.asset";
+
+        /// <summary>
+        ///     Mapping between the row names and the field names in the LoggerSettings class.
+        /// </summary>
+        private static readonly Dictionary<string, string> CategoryMapping = new()
+        {
+            { "Character", "characterResponse" },
+            { "LipSync", "lipSync" },
+            { "Actions", "actions" }
+        };
 
         /// <summary>
         ///     The LoggerSettings instance.
@@ -49,26 +59,26 @@ namespace Convai.Scripts.Editor.Logger
         {
             _loggerSettings = ScriptableObject.CreateInstance<LoggerSettings>();
 
-            _loggerSettings.Character = ConvaiLogger.LogLevel.None
-                                        | ConvaiLogger.LogLevel.Debug
-                                        | ConvaiLogger.LogLevel.Error
-                                        | ConvaiLogger.LogLevel.Exception
-                                        | ConvaiLogger.LogLevel.Info
-                                        | ConvaiLogger.LogLevel.Warning;
+            // Set default values for Character
+            _loggerSettings.characterResponseDebug = true;
+            _loggerSettings.characterResponseInfo = true;
+            _loggerSettings.characterResponseWarning = true;
+            _loggerSettings.characterResponseError = true;
+            _loggerSettings.characterResponseException = true;
 
-            _loggerSettings.LipSync = ConvaiLogger.LogLevel.None
-                                      | ConvaiLogger.LogLevel.Debug
-                                      | ConvaiLogger.LogLevel.Error
-                                      | ConvaiLogger.LogLevel.Exception
-                                      | ConvaiLogger.LogLevel.Info
-                                      | ConvaiLogger.LogLevel.Warning;
+            // Set default values for LipSync
+            _loggerSettings.lipSyncDebug = true;
+            _loggerSettings.lipSyncInfo = true;
+            _loggerSettings.lipSyncWarning = true;
+            _loggerSettings.lipSyncError = true;
+            _loggerSettings.lipSyncException = true;
 
-            _loggerSettings.Actions = ConvaiLogger.LogLevel.None
-                                      | ConvaiLogger.LogLevel.Debug
-                                      | ConvaiLogger.LogLevel.Error
-                                      | ConvaiLogger.LogLevel.Exception
-                                      | ConvaiLogger.LogLevel.Info
-                                      | ConvaiLogger.LogLevel.Warning;
+            // Set default values for Actions
+            _loggerSettings.actionsDebug = true;
+            _loggerSettings.actionsInfo = true;
+            _loggerSettings.actionsWarning = true;
+            _loggerSettings.actionsError = true;
+            _loggerSettings.actionsException = true;
 
             // Check if the Convai folder exists and create if not
             if (!AssetDatabase.IsValidFolder("Assets/Convai/Resources"))
@@ -85,41 +95,67 @@ namespace Convai.Scripts.Editor.Logger
         /// <summary>
         ///     Checks if all flags for a given row are set.
         /// </summary>
+        /// <param name="rowName">The name of the row to check.</param>
         /// <returns>True if all flags for the given row are set, false otherwise.</returns>
-        public bool GetAllFlagsForRow(FieldInfo fieldInfo)
+        public bool GetAllFlagsForRow(string rowName)
         {
-            if (fieldInfo == null) return false;
-            ConvaiLogger.LogLevel allLevel = AllLevel();
-            ConvaiLogger.LogLevel currentValue = (ConvaiLogger.LogLevel)fieldInfo.GetValue(_loggerSettings);
-            return allLevel == currentValue;
-        }
+            bool allSelected = true;
 
-        private static ConvaiLogger.LogLevel AllLevel()
-        {
-            ConvaiLogger.LogLevel allLevel = ConvaiLogger.LogLevel.None;
-            foreach (ConvaiLogger.LogLevel logLevel in Enum.GetValues(typeof(ConvaiLogger.LogLevel))) allLevel |= logLevel;
+            foreach (string logType in new[] { "Debug", "Error", "Exception", "Info", "Warning" })
+            {
+                string baseFieldName = CategoryMapping.TryGetValue(rowName, out string value) ? value : string.Empty;
+                if (string.IsNullOrEmpty(baseFieldName))
+                {
+                    Debug.LogError($"No mapping found for row {rowName}");
+                    return false;
+                }
 
-            return allLevel;
+                string fieldName = $"{baseFieldName}{logType}";
+                FieldInfo field = _loggerSettings.GetType().GetField(fieldName);
+                if (field != null)
+                {
+                    bool currentValue = (bool)field.GetValue(_loggerSettings);
+                    allSelected &= currentValue;
+                }
+                else
+                {
+                    Debug.LogError($"Field {fieldName} does not exist in LoggerSettings");
+                    return false;
+                }
+            }
+
+            return allSelected;
         }
 
 
         /// <summary>
         ///     Renders a checkbox for a given log type and handles changes to its value.
         /// </summary>
-        public void RenderAndHandleCheckbox(FieldInfo field)
+        /// <param name="rowName">The name of the row to render the checkbox for.</param>
+        /// <param name="logType">The type of log to handle.</param>
+        public void RenderAndHandleCheckbox(string rowName, string logType)
         {
-            if (field == null) return;
-            foreach (ConvaiLogger.LogLevel enumValue in Enum.GetValues(typeof(ConvaiLogger.LogLevel)))
+            // Using the mapping to get the base name for the fields
+            string baseFieldName = CategoryMapping.TryGetValue(rowName, out string value) ? value : string.Empty;
+
+            if (string.IsNullOrEmpty(baseFieldName))
             {
-                if (enumValue == ConvaiLogger.LogLevel.None) continue;
-                ConvaiLogger.LogLevel rowFlag = (ConvaiLogger.LogLevel)field.GetValue(_loggerSettings);
-                bool currentLevelValue = (rowFlag & enumValue) != 0;
-                bool newValue = EditorGUILayout.Toggle(currentLevelValue, GUILayout.Width(100));
-                if (newValue)
-                    rowFlag |= enumValue;
-                else
-                    rowFlag &= ~enumValue;
-                field.SetValue(_loggerSettings, rowFlag);
+                Debug.LogError($"No mapping found for row {rowName}");
+                return;
+            }
+
+            string fieldName = $"{baseFieldName}{logType}";
+
+            FieldInfo field = _loggerSettings.GetType().GetField(fieldName);
+            if (field != null)
+            {
+                bool currentValue = (bool)field.GetValue(_loggerSettings);
+                bool newValue = EditorGUILayout.Toggle(currentValue, GUILayout.Width(100));
+                if (currentValue != newValue) field.SetValue(_loggerSettings, newValue);
+            }
+            else
+            {
+                Debug.LogError($"Field {fieldName} does not exist in LoggerSettings");
             }
         }
 
@@ -129,9 +165,24 @@ namespace Convai.Scripts.Editor.Logger
         /// </summary>
         /// <param name="rowName">The name of the row to set the flags for.</param>
         /// <param name="value">The value to set all flags to.</param>
-        public void SetAllFlagsForRow(FieldInfo rowName, bool value)
+        public void SetAllFlagsForRow(string rowName, bool value)
         {
-            rowName.SetValue(_loggerSettings, value ? 31 : 0);
+            foreach (string logType in new[] { "Debug", "Error", "Exception", "Info", "Warning" })
+            {
+                string baseFieldName = CategoryMapping.TryGetValue(rowName, out string value1) ? value1 : string.Empty;
+                if (string.IsNullOrEmpty(baseFieldName))
+                {
+                    Debug.LogError($"No mapping found for row {rowName}");
+                    return;
+                }
+
+                string fieldName = $"{baseFieldName}{logType}";
+                FieldInfo field = _loggerSettings.GetType().GetField(fieldName);
+                if (field != null)
+                    field.SetValue(_loggerSettings, value);
+                else
+                    Debug.LogError($"Field {fieldName} does not exist in LoggerSettings");
+            }
         }
 
 
@@ -141,7 +192,19 @@ namespace Convai.Scripts.Editor.Logger
         /// <param name="value"> The value to set all flags to.</param>
         public void SetAllFlags(bool value)
         {
-            foreach (FieldInfo fieldInfo in _loggerSettings.GetType().GetFields()) fieldInfo.SetValue(_loggerSettings, value ? 31 : 0);
+            string[] categories = { "characterResponse", "lipSync", "actions" };
+            string[] logTypes = { "Debug", "Info", "Error", "Exception", "Warning" };
+
+            foreach (string category in categories)
+            foreach (string logType in logTypes)
+            {
+                string fieldName = $"{category}{logType}";
+                FieldInfo field = _loggerSettings.GetType().GetField(fieldName);
+                if (field != null && field.FieldType == typeof(bool))
+                    field.SetValue(_loggerSettings, value);
+                else
+                    Debug.LogWarning($"Field {fieldName} not found or not boolean.");
+            }
         }
     }
 }

@@ -1336,15 +1336,15 @@ GameObject:
   - component: {fileID: 771398030398563030}
   - component: {fileID: 6536524155650336616}
   - component: {fileID: 6105318575690959729}
-  - component: {fileID: 2917966240775238810}
-  - component: {fileID: 8707460129095761010}
+  - component: {fileID: 1671688294250341034}
+  - component: {fileID: 7432735092878741319}
   - component: {fileID: 3428577326447274021}
   - component: {fileID: 8910585479402959843}
   - component: {fileID: 5108935901411654454}
   - component: {fileID: 2305497635481823896}
   - component: {fileID: 1963699250122081861}
   - component: {fileID: 3495436892176323767}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: 6642e9f6e6d7b4328f1a4bad
   m_TagString: Character
   m_Icon: {fileID: 0}
@@ -1386,7 +1386,7 @@ Animator:
   m_GameObject: {fileID: 4157311215112325609}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: c65f99d6087ec3045834ecc573fb60e0, type: 2}
-  m_Controller: {fileID: 9100000, guid: 6bec2ff28a7e53e45808bd5e4b074fd1, type: 2}
+  m_Controller: {fileID: 9100000, guid: 471adb0efcba43a4c91564cd3c13ceb5, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1410,19 +1410,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterName: Steve
-  characterID: 6bae239c-11ab-11ef-9870-42010a7be00e
+  characterID: e74c546e-5ecd-11ef-9f4b-42010a7be011
   sessionID: -1
-  isCharacterActive: 0
-  actionsHandler: {fileID: 0}
-  convaiLipSync: {fileID: 0}
   isCharacterTalking: 0
-  initializeSessionID: 0
+  isCharacterActive: 0
   playerInteractionManager: {fileID: 0}
-  narrativeDesignManager: {fileID: 0}
   onTriggerSent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2917966240775238810
+--- !u!114 &1671688294250341034
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1431,7 +1427,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 4157311215112325609}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 744cc0ebc534aa44b8b0871ca72570b9, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f30d055a1cd6af4091330f082286c9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlendshapeType: 1
+  HeadSkinnedMeshRenderer: {fileID: 0}
+  TeethSkinnedMeshRenderer: {fileID: 0}
+  TongueSkinnedMeshRenderer: {fileID: 0}
+  jawBone: {fileID: 0}
+  tongueBone: {fileID: 0}
+  tongueBoneOffset: {x: -0.01, y: 0.015, z: 0}
+  firstIndex: 0
+--- !u!114 &7432735092878741319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157311215112325609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e2a73d8df3db744979a04b4dc719e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   actionMethods:
@@ -1451,40 +1467,6 @@ MonoBehaviour:
     animationName: 
     actionChoice: 1
   actionResponseList: []
---- !u!114 &8707460129095761010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4157311215112325609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88bce56f6985ef84f8835a0152628fa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceModel: 3
-  <FacialExpressionData>k__BackingField:
-    Head:
-      Renderer: {fileID: 4605206760072814719}
-      VisemeEffectorsList: {fileID: 11400000, guid: 9e12866e2d2ba6e48ae0e948f2d19127,
-        type: 2}
-      WeightBounds: {x: 0, y: 1}
-    Teeth:
-      Renderer: {fileID: 1903875742749325398}
-      VisemeEffectorsList: {fileID: 11400000, guid: 5bcdb817a21e9c348971f1b1a86bfdcc,
-        type: 2}
-      WeightBounds: {x: 0, y: 1}
-    Tongue:
-      Renderer: {fileID: 0}
-      VisemeEffectorsList: {fileID: 0}
-      WeightBounds: {x: 0, y: 1}
-    JawBoneEffector: {fileID: 0}
-    TongueBoneEffector: {fileID: 0}
-    JawBone: {fileID: 0}
-    TongueBone: {fileID: 0}
-  <WeightBlendingPower>k__BackingField: 0.5
-  characterEmotions: []
 --- !u!114 &3428577326447274021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1516,7 +1498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b64bad04a93295642a4486f9899f8734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faceSkinnedMeshRenderer: {fileID: 0}
+  faceSkinnedMeshRenderer: {fileID: 4605206760072814719}
   indexOfLeftEyelid: 65
   indexOfRightEyelid: 66
   maxBlendshapeWeight: 1
@@ -1533,14 +1515,14 @@ NavMeshAgent:
   m_GameObject: {fileID: 4157311215112325609}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.3
+  m_Radius: 0.22
   m_Speed: 1.685
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 2
+  m_StoppingDistance: 0.25
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0

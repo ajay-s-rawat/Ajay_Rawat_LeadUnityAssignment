@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4157807364306748995
 MonoBehaviour:
@@ -44,27 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3b04a8e56d4a394585355d57021ba7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Characters:
-  - Name: Amelia
-    Bio: 
-    gameObject: {fileID: 0}
-  - Name: Player
-    Bio: 
-    gameObject: {fileID: 0}
-  - Name: NPC to NPC
-    Bio: 
-    gameObject: {fileID: 0}
-  Objects:
-  - Name: Food
-    Description: 
-    gameObject: {fileID: 0}
-  - Name: Tower
-    Description: 
-    gameObject: {fileID: 0}
-  - Name: There
-    Description: The location the player is looking at.
-    gameObject: {fileID: 0}
-  - Name: Food Kart
-    Description: 
-    gameObject: {fileID: 0}
+  Characters: []
+  Objects: []
   DynamicMoveTargetIndicator: {fileID: 0}

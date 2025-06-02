@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Picking Up
-  m_Speed: 2
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -123,19 +123,19 @@ AnimatorStateMachine:
     m_Position: {x: 270, y: 600, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5623276845817709722}
-    m_Position: {x: 670, y: 590, z: 0}
+    m_Position: {x: 660, y: 590, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1779515718858864800}
-    m_Position: {x: 670, y: 540, z: 0}
+    m_Position: {x: 660, y: 540, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7553238460851743109}
-    m_Position: {x: 670, y: 490, z: 0}
+    m_Position: {x: 660, y: 490, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1391759745967338178}
     m_Position: {x: 440, y: 680, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4622648302379746373}
-    m_Position: {x: 670, y: 640, z: 0}
+    m_Position: {x: 660, y: 640, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -160,13 +160,13 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Dance
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -250,7 +250,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.4
+  m_TransitionDuration: 0.5
   m_TransitionOffset: 0
   m_ExitTime: 0.991119
   m_HasExitTime: 0

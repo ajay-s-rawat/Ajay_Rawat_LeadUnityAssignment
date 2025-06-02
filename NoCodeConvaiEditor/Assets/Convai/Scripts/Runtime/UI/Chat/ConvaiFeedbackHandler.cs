@@ -1,8 +1,4 @@
-using System;
 using Convai.Scripts.Runtime.Core;
-using Convai.Scripts.Runtime.LoggerSystem;
-using Service;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,20 +11,17 @@ namespace Convai.Scripts.Runtime.UI
 
         [SerializeField] private GameObject _thumbsUPFill;
         [SerializeField] private GameObject _thumbsDownFill;
-        [SerializeField] private TextMeshProUGUI _feedbackText;
 
-        private string _feedbackTextString;
-
-        private string _interactionID;
+        private ConvaiNPC _convaiNPC;
 
         /// <summary>
         ///     Called when the object becomes enabled and active.
         /// </summary>
         private void OnEnable()
         {
-            ConvaiGRPCAPI.Instance.OnResultReceived += ConvaiGRPCAPI_OnResultReceived;
             _thumbsUPButton.onClick.AddListener(() => OnFeedbackButtonClicked(_thumbsUPButton));
             _thumbsDownButton.onClick.AddListener(() => OnFeedbackButtonClicked(_thumbsDownButton));
+            ConvaiNPCManager.Instance.OnActiveNPCChanged += OnActiveNPCChanged;
         }
 
         /// <summary>
@@ -36,26 +29,14 @@ namespace Convai.Scripts.Runtime.UI
         /// </summary>
         private void OnDisable()
         {
-            ConvaiGRPCAPI.Instance.OnResultReceived -= ConvaiGRPCAPI_OnResultReceived;
             _thumbsUPButton.onClick.RemoveAllListeners();
             _thumbsDownButton.onClick.RemoveAllListeners();
-
-            _thumbsUPFill.SetActive(false);
-            _thumbsDownFill.SetActive(false);
+            ConvaiNPCManager.Instance.OnActiveNPCChanged -= OnActiveNPCChanged;
         }
 
-        /// <summary>
-        ///     Handles the event when a result is received from ConvaiGRPCAPI.
-        /// </summary>
-        /// <param name="result">The result received.</param>
-        private void ConvaiGRPCAPI_OnResultReceived(GetResponseResponse result)
+        private void OnActiveNPCChanged(ConvaiNPC newNPC)
         {
-            // Check if InteractionId is not null or empty.
-            if (result.InteractionId.Length > 0)
-            {
-                _interactionID = result.InteractionId;
-                ConvaiGRPCAPI.Instance.OnResultReceived -= ConvaiGRPCAPI_OnResultReceived;
-            }
+            if (newNPC != null) _convaiNPC = newNPC;
         }
 
         /// <summary>
@@ -69,38 +50,15 @@ namespace Convai.Scripts.Runtime.UI
         }
 
         /// <summary>
-        ///     Sends feedback to ConvaiGRPCAPI asynchronously.
+        ///     Sends the feedback to the Convai API.
         /// </summary>
         /// <param name="thumbsUP">Indicates whether the feedback is a thumbs up or thumbs down.</param>
-        private async void SendFeedback(bool thumbsUP)
+        private void SendFeedback(bool thumbsUP)
         {
-            if (string.IsNullOrEmpty(_interactionID))
-            {
-                ConvaiLogger.Error("InteractionId is null or empty", ConvaiLogger.LogCategory.Character);
-                return;
-            }
-
             // Set the fill visuals for thumbs up and thumbs down buttons.
             HandleThumbsFill(thumbsUP);
 
-            // Extract feedback text after the colon character.
-            string feedbackText = RemoveBeforeColon(_feedbackText.text);
-
-            // Send feedback to ConvaiGRPCAPI.
-            await ConvaiGRPCAPI.Instance.SendFeedback(thumbsUP, _interactionID, feedbackText);
-        }
-
-        /// <summary>
-        ///     Removes the text before the colon character in the given string.
-        /// </summary>
-        /// <param name="text">The input text.</param>
-        /// <returns>The modified text after removing the portion before the colon.</returns>
-        private string RemoveBeforeColon(string text)
-        {
-            int colonIndex = text.IndexOf(':', StringComparison.Ordinal);
-            if (colonIndex != -1) return text.Substring(colonIndex + 2);
-
-            return text;
+            ConvaiGRPCWebAPI.Instance.SendFeedback(_convaiNPC.characterID, _convaiNPC.sessionID, thumbsUP, "");
         }
 
         /// <summary>

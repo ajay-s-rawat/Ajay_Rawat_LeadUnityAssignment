@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Convai.Scripts.Runtime.Core;
 using Convai.Scripts.Runtime.LoggerSystem;
-using Service;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
@@ -37,7 +36,6 @@ namespace Convai.Scripts.Runtime.Features
         private List<string> _actions = new();
         private ConvaiNPC _currentNPC;
         private ConvaiInteractablesData _interactablesData;
-        private Coroutine _playActionListCoroutine;
 
         // Awake is called when the script instance is being loaded
         private void Awake()
@@ -55,10 +53,12 @@ namespace Convai.Scripts.Runtime.Features
             if (TryGetComponent(out ConvaiNPC npc))
                 // If it does, set the current NPC to this GameObject
                 _currentNPC = npc;
+            // Set up the action configuration
 
+            #region Actions Setup
 
             // Iterate through each action method and add its name to the action configuration
-            foreach (ActionMethod actionMethod in actionMethods) ActionConfig.Actions.Add(actionMethod.action);
+            foreach (ActionMethod actionMethod in actionMethods) ActionConfig.actions.Add(actionMethod.action);
 
             if (_interactablesData != null)
             {
@@ -67,11 +67,11 @@ namespace Convai.Scripts.Runtime.Features
                 {
                     ActionConfig.Types.Character rpcCharacter = new()
                     {
-                        Name = character.Name,
-                        Bio = character.Bio
+                        name = character.Name,
+                        bio = character.Bio
                     };
 
-                    ActionConfig.Characters.Add(rpcCharacter);
+                    ActionConfig.characters.Add(rpcCharacter);
                 }
 
                 // Iterate through each object in global action settings and add them to the action configuration
@@ -79,14 +79,19 @@ namespace Convai.Scripts.Runtime.Features
                 {
                     ActionConfig.Types.Object rpcObject = new()
                     {
-                        Name = eachObject.Name,
-                        Description = eachObject.Description
+                        name = eachObject.Name,
+                        description = eachObject.Description
                     };
-                    ActionConfig.Objects.Add(rpcObject);
+                    ActionConfig.objects.Add(rpcObject);
                 }
             }
-        }
 
+            // Set the classification of the action configuration to "multistep"
+            ActionConfig.classification = "multistep";
+
+            #endregion
+        }
+        
         private void Reset()
         {
             actionMethods = new ActionMethod[]
@@ -102,32 +107,8 @@ namespace Convai.Scripts.Runtime.Features
         // Start is called before the first frame update
         private void Start()
         {
-            // Set up the action configuration
-
-            #region Actions Setup
-
-            // Set the classification of the action configuration to "multistep"
-            ActionConfig.Classification = "multistep";
-
-            // Log the configured action information
-            ConvaiLogger.DebugLog(ActionConfig, ConvaiLogger.LogCategory.Actions);
-
-            #endregion
-
             // Start playing the action list using a coroutine
-            _playActionListCoroutine = StartCoroutine(PlayActionList());
-        }
-
-        private void OnEnable() {
-            if ( _playActionListCoroutine != null ) {
-                _playActionListCoroutine = StartCoroutine(PlayActionList());
-            }
-        }
-        
-        private void OnDisable() {
-            if ( _playActionListCoroutine != null ) {
-                StopCoroutine(_playActionListCoroutine);
-            }
+            StartCoroutine(PlayActionList());
         }
 
         private void Update()
@@ -562,7 +543,7 @@ namespace Convai.Scripts.Runtime.Features
             ActionEnded?.Invoke("Crouch", _currentNPC.gameObject);
         }
 
-        private IEnumerator MoveTo(GameObject target)
+        public IEnumerator MoveTo(GameObject target)
         {
             if (!IsTargetValid(target)) yield break;
 

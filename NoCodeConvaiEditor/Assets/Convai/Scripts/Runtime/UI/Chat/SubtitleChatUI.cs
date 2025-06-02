@@ -1,4 +1,3 @@
-using Convai.Scripts.Runtime.LoggerSystem;
 using TMPro;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Convai.Scripts.Runtime.UI
     public class SubtitleChatUI : ChatUIBase
     {
         private GameObject _feedbackButtons;
-        private Message _subtitle;
+        private TextMeshProUGUI _subtitleText;
 
         /// <summary>
         ///     Initializes the subtitle UI with the provided prefab.
@@ -21,16 +20,12 @@ namespace Convai.Scripts.Runtime.UI
         {
             // Instantiate the UI prefab and get the subtitle text component
             UIInstance = Instantiate(uiPrefab);
-            _subtitle = new Message
-            {
-                SenderTextObject = UIInstance.transform.Find("Background").Find("ChatBox").Find("Subtitle").Find("Sender").GetComponent<TMP_Text>(),
-                MessageTextObject = UIInstance.transform.Find("Background").Find("ChatBox").Find("Subtitle").Find("Text").GetComponent<TMP_Text>()
-            };
+            _subtitleText = UIInstance.GetComponentInChildren<TextMeshProUGUI>();
 
             // Start with the UI inactive
             UIInstance.SetActive(false);
 
-            _feedbackButtons = _subtitle.MessageTextObject.transform.GetChild(0).gameObject;
+            _feedbackButtons = _subtitleText.transform.GetChild(0).gameObject;
         }
 
         /// <summary>
@@ -68,33 +63,26 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="color">The color associated with the speaker.</param>
         private void UpdateSubtitleText(string speakerName, string text, Color color)
         {
-            if (string.IsNullOrEmpty(text)) return;
-
             // Check if the subtitle text component is available before updating.
-            if (_subtitle != null)
-            {
-                _subtitle.SenderTextObject.text = FormatSpeakerName(speakerName, color);
-                _subtitle.MessageTextObject.text = text;
-                _subtitle.RTLUpdate();
-            }
+            if (_subtitleText != null)
+                _subtitleText.text = FormatText(speakerName, text, color);
             else
-            {
-                ConvaiLogger.Warn("Subtitle text component is not available.", ConvaiLogger.LogCategory.UI);
-            }
+                Debug.LogError("Subtitle text component not found.");
         }
 
         /// <summary>
-        ///     Formats the speaker's name with the color tag.
+        ///     Formats the text with the speaker's name and color.
         /// </summary>
         /// <param name="speakerName">The name of the speaker.</param>
+        /// <param name="text">The text spoken by the speaker.</param>
         /// <param name="color">The color associated with the speaker.</param>
-        /// <returns>The formatted speaker name</returns>
-        private string FormatSpeakerName(string speakerName, Color color)
+        /// <returns>The formatted text string.</returns>
+        private string FormatText(string speakerName, string text, Color color)
         {
             // Convert the color to a hex string for HTML color formatting.
             string colorHex = ColorUtility.ToHtmlStringRGB(color);
             // Return the formatted text with the speaker's name and color.
-            return $"<color=#{colorHex}>{speakerName}</color>: ";
+            return $"<color=#{colorHex}>{speakerName}</color>: {text}";
         }
     }
 }

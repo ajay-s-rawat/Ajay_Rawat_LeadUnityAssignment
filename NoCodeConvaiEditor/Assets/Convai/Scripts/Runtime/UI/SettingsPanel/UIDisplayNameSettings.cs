@@ -1,5 +1,3 @@
-using System.Collections;
-using Convai.Scripts.Runtime.PlayerStats;
 using TMPro;
 using UnityEngine;
 
@@ -13,61 +11,63 @@ namespace Convai.Scripts.Runtime.UI
         /// <summary>
         ///     Reference to the TextMeshPro input field for entering/displaying the display name.
         /// </summary>
-        [SerializeField] private TMP_InputField playerNameInputField;
+        [SerializeField] private TMP_InputField _playerNameInputField;
 
-        private ConvaiPlayerDataSO _convaiPlayerData;
-        private bool _hasPlayerNameBeenSaved;
-        private string _originalPlayerName;
-        private UISettingsPanel _uiSettingsPanel;
-
-        private void Awake()
-        {
-            _originalPlayerName = string.Empty;
-            _uiSettingsPanel = GetComponentInParent<UISettingsPanel>();
-
-            _uiSettingsPanel.SaveChangesButton.onClick.AddListener(() =>
-            {
-                _hasPlayerNameBeenSaved = true;
-                _originalPlayerName = string.Empty;
-            });
-
-            _uiSettingsPanel.SettingsPanelExitButton.onClick.AddListener(() =>
-            {
-                if (_hasPlayerNameBeenSaved || string.IsNullOrEmpty(_originalPlayerName)) return;
-                playerNameInputField.text = _originalPlayerName;
-                _originalPlayerName = string.Empty;
-            });
-        }
-
-        private IEnumerator Start()
-        {
-            yield return new WaitForSeconds(0.1f);
-            if (ConvaiPlayerDataSO.GetPlayerData(out _convaiPlayerData))
-                playerNameInputField.text = string.IsNullOrEmpty(_convaiPlayerData.PlayerName) ? _convaiPlayerData.DefaultPlayerName : _convaiPlayerData.PlayerName;
-        }
-
+        /// <summary>
+        ///     Subscribe to events when this component is enabled.
+        /// </summary>
         private void OnEnable()
         {
+            // Subscribe to the event when saved data is loaded.
+            UISaveLoadSystem.Instance.OnLoad += UISaveLoadSystem_OnLoad;
+
+            // Subscribe to the event when data is saved.
             UISaveLoadSystem.Instance.OnSave += UISaveLoadSystem_OnSave;
-            playerNameInputField.onSelect.AddListener(PlayerNameInputField_OnSelect);
         }
 
+        /// <summary>
+        ///     Unsubscribe from events when this component is disabled.
+        /// </summary>
         private void OnDisable()
         {
+            // Unsubscribe from the event when saved data is loaded.
+            UISaveLoadSystem.Instance.OnLoad -= UISaveLoadSystem_OnLoad;
+
+            // Unsubscribe from the event when data is saved.
             UISaveLoadSystem.Instance.OnSave -= UISaveLoadSystem_OnSave;
-            playerNameInputField.onSelect.RemoveListener(PlayerNameInputField_OnSelect);
         }
 
-        private void PlayerNameInputField_OnSelect(string value)
+        /// <summary>
+        ///     Event handler when saved data is loaded.
+        /// </summary>
+        private void UISaveLoadSystem_OnLoad()
         {
-            if (!string.IsNullOrEmpty(_originalPlayerName)) return;
-            _originalPlayerName = value;
+            // Set the display name input field text to the loaded display name.
+            _playerNameInputField.text = UISaveLoadSystem.Instance.PlayerName;
+
+            // Update the player name in the ConvaiChatUIHandler.
+            ChangePlayerName();
         }
 
+        /// <summary>
+        ///     Event handler when data is saved.
+        /// </summary>
         private void UISaveLoadSystem_OnSave()
         {
-            if (_convaiPlayerData == null || !_hasPlayerNameBeenSaved || string.IsNullOrEmpty(playerNameInputField.text)) return;
-            _convaiPlayerData.PlayerName = playerNameInputField.text;
+            // Save the display name from the input field to the UISaveLoadSystem.
+            UISaveLoadSystem.Instance.PlayerName = _playerNameInputField.text;
+
+            // Update the player name in the ConvaiChatUIHandler.
+            ChangePlayerName();
+        }
+
+        /// <summary>
+        ///     Updates the player name in the ConvaiChatUIHandler.
+        /// </summary>
+        private void ChangePlayerName()
+        {
+            // Changes the player name in the ConvaiChatUIHandler.
+            ConvaiChatUIHandler.Instance.playerName = _playerNameInputField.text;
         }
     }
 }

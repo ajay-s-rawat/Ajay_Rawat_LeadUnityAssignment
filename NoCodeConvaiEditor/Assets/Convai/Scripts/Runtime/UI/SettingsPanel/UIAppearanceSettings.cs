@@ -12,8 +12,6 @@ namespace Convai.Scripts.Runtime.UI
     /// </summary>
     public class UIAppearanceSettings : MonoBehaviour
     {
-        public static Action<bool> UIStatusChange;
-
         [Header("Settings Panel Animation Values")] [SerializeField] [Tooltip("Duration of the appearance preview animation.")]
         private float _appearancePreviewDuration = 1f;
 
@@ -117,22 +115,8 @@ namespace Convai.Scripts.Runtime.UI
         private void ConvaiNPCManager_OnActiveNPCChanged(ConvaiNPC newActiveNPC)
         {
             if (newActiveNPC != null)
-            {
-                if (!UISaveLoadSystem.Instance.TranscriptUIActiveStatus) return;
                 _fadeCanvas.StartFadeIn(_currentActiveAppearance.GetCanvasGroup(), _fadeInDuration);
-                UIStatusChange?.Invoke(true);
-            }
-            else
-            {
-                _fadeCanvas.OnCurrentFadeCompleted += FadeOutChat;
-                _fadeCanvas.StartFadeOut(_currentActiveAppearance.GetCanvasGroup(), _fadeOutDuration);
-            }
-        }
-
-        private void FadeOutChat()
-        {
-            UIStatusChange?.Invoke(false);
-            _fadeCanvas.OnCurrentFadeCompleted -= FadeOutChat;
+            else _fadeCanvas.StartFadeOut(_currentActiveAppearance.GetCanvasGroup(), _fadeOutDuration);
         }
 
         /// <summary>

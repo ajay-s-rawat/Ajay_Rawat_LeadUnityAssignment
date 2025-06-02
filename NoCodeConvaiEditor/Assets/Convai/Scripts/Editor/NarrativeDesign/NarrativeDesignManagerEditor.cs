@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Unity.EditorCoroutines.Editor;
 using Convai.Scripts.Runtime.Features;
 using UnityEditor;
 using UnityEngine;
@@ -35,7 +35,10 @@ namespace Convai.Scripts.Editor.NarrativeDesign
 
         private void DrawUpdateButton()
         {
-            if (GUILayout.Button("Check for Updates")) OnUpdateNarrativeDesignButtonClicked();
+            if (GUILayout.Button("Check for Updates"))
+            {
+                EditorCoroutineUtility.StartCoroutine(OnUpdateNarrativeDesignButtonClicked(), this);
+            }
             GUILayout.Space(10);
         }
 
@@ -100,9 +103,9 @@ namespace Convai.Scripts.Editor.NarrativeDesign
             EditorGUI.indentLevel--;
         }
 
-        private async void OnUpdateNarrativeDesignButtonClicked()
+        private System.Collections.IEnumerator OnUpdateNarrativeDesignButtonClicked()
         {
-            await Task.WhenAll(_narrativeDesignManager.UpdateSectionListAsync(), _narrativeDesignManager.UpdateTriggerListAsync());
+            yield return EditorCoroutineUtility.StartCoroutine(UpdateNarrativeDesignCoroutine(), this);
 
             // Remove section change events for deleted sections
             _narrativeDesignManager.sectionChangeEventsDataList = _narrativeDesignManager.sectionChangeEventsDataList
@@ -122,6 +125,11 @@ namespace Convai.Scripts.Editor.NarrativeDesign
             Repaint();
         }
 
+        private System.Collections.IEnumerator UpdateNarrativeDesignCoroutine()
+        {
+            yield return EditorCoroutineUtility.StartCoroutine(_narrativeDesignManager.UpdateSectionListCoroutine(), this);
+            yield return EditorCoroutineUtility.StartCoroutine(_narrativeDesignManager.UpdateTriggerListCoroutine(), this);
+        }
 
         private void FindProperties()
         {

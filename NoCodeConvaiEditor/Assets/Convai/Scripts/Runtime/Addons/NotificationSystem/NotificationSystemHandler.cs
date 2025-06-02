@@ -1,5 +1,4 @@
 using System;
-using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEngine;
 
 namespace Convai.Scripts.Runtime.Addons
@@ -38,7 +37,8 @@ namespace Convai.Scripts.Runtime.Addons
         {
             if (Instance != null)
             {
-                ConvaiLogger.DebugLog("<color=red> There's More Than One NotificationSystemHandler </color> " + transform + " - " + Instance, ConvaiLogger.LogCategory.UI);
+                Debug.Log("<color=red> There's More Than One NotificationSystemHandler </color> " + transform + " - " +
+                          Instance);
                 Destroy(gameObject);
                 return;
             }
@@ -67,7 +67,7 @@ namespace Convai.Scripts.Runtime.Addons
             // If the requested notification is not found, log an error.
             if (requestedSONotification == null)
             {
-                ConvaiLogger.Error("There is no Notification defined for the selected Notification Type!", ConvaiLogger.LogCategory.UI);
+                Debug.LogError("There is no Notification defined for the selected Notification Type!");
                 return;
             }
 

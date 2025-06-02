@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Convai.Scripts.Runtime.Addons;
 using Convai.Scripts.Runtime.Core;
-using Convai.Scripts.Runtime.Extensions;
 using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,9 +16,6 @@ namespace Convai.Scripts.Runtime.UI
     {
         [SerializeField] protected GameObject recordingMarker;
         private readonly List<Character> _characters = new();
-        private float _markerInitialAlpha;
-
-        private Image _recordingMarkerImage;
         [NonSerialized] protected GameObject UIInstance;
 
         /// <summary>
@@ -28,9 +23,8 @@ namespace Convai.Scripts.Runtime.UI
         /// </summary>
         protected virtual void Start()
         {
-            SetupMarkerImage();
             SetRecordingMarkerActive(true);
-            ConvaiGRPCAPI.Instance.OnPlayerSpeakingChanged += OnPlayerSpeakingChanged;
+            ConvaiGRPCWebAPI.Instance.OnPlayerSpeakingChanged += OnPlayerSpeakingChanged;
         }
 
         /// <summary>
@@ -40,15 +34,11 @@ namespace Convai.Scripts.Runtime.UI
         public abstract void Initialize(GameObject uiPrefab);
 
         /// <summary>
-        ///     Activates the UI instance if transcript UI status is active.
+        ///     Activates the UI instance.
         /// </summary>
         public virtual void ActivateUI()
         {
-            if (UISaveLoadSystem.Instance.TranscriptUIActiveStatus)
-            {
-                SetUIActive(true);
-                UIStatusChange?.Invoke(true);
-            }
+            SetUIActive(true);
         }
 
         /// <summary>
@@ -57,7 +47,6 @@ namespace Convai.Scripts.Runtime.UI
         public virtual void DeactivateUI()
         {
             SetUIActive(false);
-            UIStatusChange.Invoke(false);
         }
 
         /// <summary>
@@ -83,16 +72,6 @@ namespace Convai.Scripts.Runtime.UI
         public CanvasGroup GetCanvasGroup()
         {
             return UIInstance.GetComponent<CanvasGroup>();
-        }
-
-        public static event Action<bool> UIStatusChange;
-
-        private void SetupMarkerImage()
-        {
-            if (recordingMarker == null) throw new NullReferenceException("Recording Marker Image cannot be null, please assign an image for it");
-            _recordingMarkerImage = recordingMarker.GetComponent<Image>();
-            if (_recordingMarkerImage == null) throw new NullReferenceException("Recording Marker does not have an Image Component attached, system cannot work without it");
-            _markerInitialAlpha = _recordingMarkerImage.color.a;
         }
 
         /// <summary>
@@ -121,8 +100,8 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="isSpeaking">Whether the player is currently speaking.</param>
         private void OnPlayerSpeakingChanged(bool isSpeaking)
         {
-            if (_recordingMarkerImage != null)
-                _recordingMarkerImage = _recordingMarkerImage.WithColorValue(a: isSpeaking ? 1.0f : _markerInitialAlpha);
+            if (recordingMarker.TryGetComponent(out Image image))
+                image.color = new Color(image.color.r, image.color.g, image.color.b, isSpeaking ? 1.0f : 0.5f);
             else
                 ConvaiLogger.Error("Image component not found on recording marker.", ConvaiLogger.LogCategory.Character);
         }

@@ -7,7 +7,7 @@ namespace Convai.Scripts.Runtime.Features
 {
     public class NarrativeDesignKeyController : MonoBehaviour
     {
-        public List<NarrativeDesignKey> narrativeDesignKeys;
+        public NarrativeDesignKeysContainer narrativeDesignKeyController;
         
         [Serializable]
         public class NarrativeDesignKey
@@ -16,27 +16,34 @@ namespace Convai.Scripts.Runtime.Features
             public string value;
         }
         
+        [Serializable]
+        public class NarrativeDesignKeysContainer
+        {
+            public List<NarrativeDesignKey> narrativeDesignKeys;
+        }
         public void SetTemplateKey(Dictionary<string, string> keyValuePairs)
         {
-            narrativeDesignKeys.Clear();
-            narrativeDesignKeys.AddRange(from item in keyValuePairs
+            narrativeDesignKeyController.narrativeDesignKeys.Clear();
+            narrativeDesignKeyController.narrativeDesignKeys.AddRange(from item in keyValuePairs
                 select new NarrativeDesignKey { name = item.Key, value = item.Value });
         }
         public void AddTemplateKey(string name, string value)
         {
-            narrativeDesignKeys.Add(new NarrativeDesignKey { name = name, value = value });
+            narrativeDesignKeyController.narrativeDesignKeys.Add(new NarrativeDesignKey { name = name, value = value });
         }
         public void RemoveTemplateKey(string name)
         {
-            NarrativeDesignKey reference = narrativeDesignKeys.Find(x => x.name == name);
+            NarrativeDesignKey reference = narrativeDesignKeyController.narrativeDesignKeys.Find(x => x.name == name);
             if(reference == null) return;
-            narrativeDesignKeys.Remove(reference);
+            narrativeDesignKeyController.narrativeDesignKeys.Remove(reference);
         }
         public void UpdateTemplateKey(string name, string value)
         {
-            NarrativeDesignKey reference = narrativeDesignKeys.Find(x => x.name == name);
+            NarrativeDesignKey reference = narrativeDesignKeyController.narrativeDesignKeys.Find(x => x.name == name);
             if (reference == null) return;
             reference.value = value;
         }
+        
+     
     }
 }

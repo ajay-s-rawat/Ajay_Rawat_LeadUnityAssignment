@@ -84,6 +84,7 @@ namespace Convai.Scripts.Runtime.UI
         private IEnumerator FadeIn(CanvasGroup canvasGroup, float duration)
         {
             float elapsedTime = 0.0f;
+
             // Gradually increase alpha from 0 to 1
             while (_currentAlpha <= 1.0f)
             {
@@ -92,7 +93,6 @@ namespace Convai.Scripts.Runtime.UI
                 yield return null;
             }
 
-            canvasGroup.blocksRaycasts = true;
             OnCurrentFadeCompleted?.Invoke();
         }
 
@@ -112,8 +112,6 @@ namespace Convai.Scripts.Runtime.UI
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
-
-            canvasGroup.blocksRaycasts = false;
 
             OnCurrentFadeCompleted?.Invoke();
         }

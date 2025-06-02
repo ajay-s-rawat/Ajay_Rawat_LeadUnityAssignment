@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Convai.Scripts.Runtime.Addons;
-using Convai.Scripts.Runtime.LoggerSystem;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Convai.Scripts.Runtime.LoggerSystem
@@ -16,10 +13,7 @@ namespace Convai.Scripts.Runtime.LoggerSystem
         {
             Character,
             LipSync,
-            Actions,
-            Editor,
-            UI,
-            GRPC
+            Actions
         }
 
         #endregion
@@ -36,15 +30,28 @@ namespace Convai.Scripts.Runtime.LoggerSystem
 
         private static bool ShouldLog(LogLevel level, LogCategory category)
         {
-            return category switch
+            // Check log level and log category at the same time
+            return (level, category) switch
             {
-                LogCategory.Character => (LoggerConfig.CharacterResponseFlag & level) != 0,
-                LogCategory.LipSync => (LoggerConfig.LipsyncLogFlag & level) != 0,
-                LogCategory.Actions => (LoggerConfig.ActionFlag & level) != 0,
-                LogCategory.UI => (LoggerConfig.UIFlag & level) != 0,
-                LogCategory.GRPC => (LoggerConfig.GRPCFlag & level) != 0,
-                LogCategory.Editor => (LoggerConfig.EditorFlag & level) != 0,
-                _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
+                (LogLevel.Debug, LogCategory.Character) => LoggerConfig.CharacterLogDebug,
+                (LogLevel.Info, LogCategory.Character) => LoggerConfig.CharacterLogInfo,
+                (LogLevel.Warning, LogCategory.Character) => LoggerConfig.CharacterLogWarning,
+                (LogLevel.Error, LogCategory.Character) => LoggerConfig.CharacterLogError,
+                (LogLevel.Exception, LogCategory.Character) => LoggerConfig.CharacterLogException,
+
+                (LogLevel.Debug, LogCategory.LipSync) => LoggerConfig.LipSyncLogDebug,
+                (LogLevel.Info, LogCategory.LipSync) => LoggerConfig.LipSyncLogInfo,
+                (LogLevel.Warning, LogCategory.LipSync) => LoggerConfig.LipSyncLogWarning,
+                (LogLevel.Error, LogCategory.LipSync) => LoggerConfig.LipSyncLogError,
+                (LogLevel.Exception, LogCategory.LipSync) => LoggerConfig.LipSyncLogException,
+
+                (LogLevel.Debug, LogCategory.Actions) => LoggerConfig.ActionsLogDebug,
+                (LogLevel.Info, LogCategory.Actions) => LoggerConfig.ActionsLogInfo,
+                (LogLevel.Warning, LogCategory.Actions) => LoggerConfig.ActionsLogWarning,
+                (LogLevel.Error, LogCategory.Actions) => LoggerConfig.ActionsLogError,
+                (LogLevel.Exception, LogCategory.Actions) => LoggerConfig.ActionsLogException,
+
+                _ => false
             };
         }
 
@@ -62,8 +69,8 @@ namespace Convai.Scripts.Runtime.LoggerSystem
             string logMessage =
                 $"[{Enum.GetName(typeof(LogLevel), level)}][{Enum.GetName(typeof(LogCategory), category)}]: {formattedMessage}";
 
-            if (LevelColors.TryGetValue(level, out string color) && color != "default")
-                logMessage = $"<color={color}>{logMessage}</color>";
+            //if (LevelColors.TryGetValue(level, out string color) && color != "default")
+            //    logMessage = $"<color={color}>{logMessage}</color>";
 
             // Select the first frame that is from the non-ConvaiLogger type.
             StackTrace trace = new(2, true);
@@ -151,41 +158,13 @@ namespace Convai.Scripts.Runtime.LoggerSystem
             Exception(message, category);
         }
 
-        [Flags]
-        public enum LogLevel
+        private enum LogLevel
         {
-            None = 0,
-            Debug = 1 << 0,
-            Error = 1 << 1,
-            Exception = 1 << 2,
-            Info = 1 << 3,
-            Warning = 1 << 4
-        }
-    }
-}
-
-namespace Convai.Scripts.Runtime.Addons
-{
-    public static class LoggerConfig
-    {
-        private static LoggerSettings _settings;
-
-        public static readonly ConvaiLogger.LogLevel LipsyncLogFlag = Settings.LipSync;
-        public static readonly ConvaiLogger.LogLevel CharacterResponseFlag = _settings.Character;
-        public static readonly ConvaiLogger.LogLevel ActionFlag = _settings.Actions;
-        public static readonly ConvaiLogger.LogLevel UIFlag = _settings.UI;
-        public static readonly ConvaiLogger.LogLevel GRPCFlag = _settings.GRPC;
-        public static readonly ConvaiLogger.LogLevel EditorFlag = _settings.Editor;
-
-
-        private static LoggerSettings Settings
-        {
-            get
-            {
-                if (_settings == null) _settings = Resources.Load<LoggerSettings>("LoggerSettings");
-
-                return _settings;
-            }
+            Debug,
+            Info,
+            Warning,
+            Error,
+            Exception
         }
     }
 }

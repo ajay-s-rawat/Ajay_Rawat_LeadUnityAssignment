@@ -1,12 +1,9 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using Convai.Scripts.Runtime.LoggerSystem;
+using Convai.Scripts.Runtime.Utils;
 using Newtonsoft.Json;
+using UnityEngine.Networking;
 
 namespace Convai.Scripts.Runtime.Features
 {
@@ -16,34 +13,17 @@ namespace Convai.Scripts.Runtime.Features
     public class NarrativeDesignAPI
     {
         private const string BASE_URL = "https://api.convai.com/character/narrative/";
-        private readonly HttpClient _httpClient;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="NarrativeDesignAPI" /> class.
-        /// </summary>
-        public NarrativeDesignAPI()
+        public IEnumerator CreateSectionCoroutine(string characterId, string objective, string sectionName, System.Action<string> callback, string behaviorTreeCode = null, string btConstants = null)
         {
-            _httpClient = new HttpClient
+            if (string.IsNullOrEmpty(characterId) || string.IsNullOrEmpty(sectionName))
             {
-                // Set a default request timeout if needed
-                Timeout = TimeSpan.FromSeconds(30) // Example: 30 seconds
-            };
-
-            // Get the API key from the ConvaiAPIKeySetup object
-            if (ConvaiAPIKeySetup.GetAPIKey(out string apiKey))
-            {
-                // Set default request headers here
-                _httpClient.DefaultRequestHeaders.Add("CONVAI-API-KEY", apiKey);
-
-                // Set default headers like Accept to expect a JSON response
-                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                callback?.Invoke("Invalid character ID or section name.");
+                yield break; // Early exit on validation failure
             }
-        }
 
-        public async Task<string> CreateSectionAsync(string characterId, string objective, string sectionName, string behaviorTreeCode = null, string btConstants = null)
-        {
             string endpoint = "create-section";
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId },
                 { "objective", objective },
@@ -51,100 +31,92 @@ namespace Convai.Scripts.Runtime.Features
                 { "behavior_tree_code", behaviorTreeCode },
                 { "bt_constants", btConstants }
             });
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        public async Task<string> GetSectionAsync(string characterId, string sectionId)
+        public IEnumerator GetSectionCoroutine(string characterId, string sectionId, System.Action<string> callback)
         {
             string endpoint = "get-section";
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId },
                 { "section_id", sectionId }
             });
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        /// <summary>
-        ///     Get a list of sections for a character.
-        /// </summary>
-        /// <param name="characterId"> The character ID. </param>
-        /// <returns> A JSON string containing the list of sections. </returns>
-        public async Task<string> ListSectionsAsync(string characterId)
+        public IEnumerator ListSectionsCoroutine(string characterId, System.Action<string> callback)
         {
             string endpoint = "list-sections";
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId }
             });
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        public async Task<string> CreateTriggerAsync(string characterId, string triggerName, string triggerMessage = null, string destinationSection = null)
+        public IEnumerator CreateTriggerCoroutine(string characterId, string triggerName, System.Action<string> callback, string triggerMessage = null, string destinationSection = null)
         {
             string endpoint = "create-trigger";
 
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId },
                 { "trigger_message", triggerMessage },
                 { "destination_section", destinationSection }
             });
 
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        public async Task<string> GetTriggerAsync(string characterId, string triggerId)
+        public IEnumerator GetTriggerCoroutine(string characterId, string triggerId, System.Action<string> callback)
         {
             string endpoint = "get-trigger";
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId },
                 { "trigger_id", triggerId }
             });
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        /// <summary>
-        ///     Get a list of triggers for a character.
-        /// </summary>
-        /// <param name="characterId"> The character ID. </param>
-        /// <returns> A JSON string containing the list of triggers. </returns>
-        public async Task<string> GetTriggerListAsync(string characterId)
+        public IEnumerator GetTriggerListCoroutine(string characterId, System.Action<string> callback)
         {
             string endpoint = "list-triggers";
-            HttpContent content = CreateHttpContent(new Dictionary<string, object>
+            var jsonData = JsonConvert.SerializeObject(new Dictionary<string, object>
             {
                 { "character_id", characterId }
             });
-            return await SendPostRequestAsync(endpoint, content);
+            yield return SendPostRequestCoroutine(endpoint, jsonData, callback);
         }
 
-        private static HttpContent CreateHttpContent(Dictionary<string, object> data)
+        private IEnumerator SendPostRequestCoroutine(string endpoint, string jsonData, System.Action<string> callback)
         {
-            //Dictionary where all values are not null
-            Dictionary<string, object> dataToSend =
-                data.Where(keyValuePair => keyValuePair.Value != null).ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
-
-            // Serialize the dictionary to JSON
-            string json = JsonConvert.SerializeObject(dataToSend);
-
-            // Convert JSON to HttpContent
-            return new StringContent(json, Encoding.UTF8, "application/json");
-        }
-
-        private async Task<string> SendPostRequestAsync(string endpoint, HttpContent content)
-        {
-            try
+            using (UnityWebRequest request = new UnityWebRequest(BASE_URL + endpoint, "POST"))
             {
-                HttpResponseMessage response = await _httpClient.PostAsync(BASE_URL + endpoint, content);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
-            }
-            catch (HttpRequestException e)
-            {
-                ConvaiLogger.Exception($"Request to {endpoint} failed: {e.Message}", ConvaiLogger.LogCategory.GRPC);
-                return null;
+                byte[] bodyRaw = new System.Text.UTF8Encoding().GetBytes(jsonData);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+
+                // Set headers
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("CONVAI-API-KEY", ConvaiAPIKeySetup.GetAPIKey(out string apiKey) ? apiKey : "");
+
+                // Send the request and wait for it to complete
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+                {
+                    string errorMsg = $"Request to {endpoint} failed: {request.error}";
+                    ConvaiLogger.Exception(errorMsg, ConvaiLogger.LogCategory.Character);
+                    callback?.Invoke(errorMsg);
+                }
+                else
+                {
+                    // Get the response
+                    string responseText = request.downloadHandler.text;
+                    callback?.Invoke(responseText);
+                }
             }
         }
     }

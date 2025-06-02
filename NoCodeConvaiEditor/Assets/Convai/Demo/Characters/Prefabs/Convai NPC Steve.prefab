@@ -10,6 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 771398030398563030, guid: 6c281cc73f7505f4fbdef39f95d456a1,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 771398030398563030, guid: 6c281cc73f7505f4fbdef39f95d456a1,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -58,52 +63,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 986702336165489965, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.12757719
-      objectReference: {fileID: 0}
-    - target: {fileID: 986702336165489965, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.043085996
-      objectReference: {fileID: 0}
     - target: {fileID: 4157311215112325609, guid: 6c281cc73f7505f4fbdef39f95d456a1,
         type: 3}
       propertyPath: m_Name
       value: Convai NPC Steve
       objectReference: {fileID: 0}
-    - target: {fileID: 4157311215112325609, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157311215112325609, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_TagString
-      value: Character
-      objectReference: {fileID: 0}
-    - target: {fileID: 6105318575690959729, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: initializeSessionID
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6536524155650336616, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 6bec2ff28a7e53e45808bd5e4b074fd1, type: 2}
-    - target: {fileID: 7203234647116835351, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.039060652
-      objectReference: {fileID: 0}
-    - target: {fileID: 7203234647116835351, guid: 6c281cc73f7505f4fbdef39f95d456a1,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.0018974931
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4982524612659589340, guid: 6c281cc73f7505f4fbdef39f95d456a1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -11,7 +11,6 @@ namespace Convai.Scripts.Runtime.Addons
     [RequireComponent(typeof(CharacterController))]
     [DisallowMultipleComponent]
     [AddComponentMenu("Convai/Player Movement")]
-    [HelpURL("https://docs.convai.com/api-docs/plugins-and-integrations/unity-plugin/scripts-overview")]
     public class ConvaiPlayerMovement : MonoBehaviour
     {
         [Header("Movement Parameters")] [SerializeField] [Tooltip("The speed at which the player walks.")] [Range(1, 10)]
@@ -30,7 +29,7 @@ namespace Convai.Scripts.Runtime.Addons
         private Camera playerCamera;
 
         [SerializeField] [Tooltip("Speed at which the player can look around.")] [Range(0, 1)]
-        private float lookSpeedMultiplier = 0.5f;
+        private float lookSpeedMultiplier = 0.05f;
 
         [SerializeField] [Tooltip("Limit of upwards and downwards look angles.")] [Range(1, 90)]
         private float lookXLimit = 45.0f;

@@ -484,7 +484,6 @@ GameObject:
   - component: {fileID: 3744100246515640604}
   - component: {fileID: 2427956472312638167}
   - component: {fileID: 2927168576613627081}
-  - component: {fileID: 7606302864135197523}
   - component: {fileID: 9024694524144705352}
   - component: {fileID: 5129977736962580012}
   - component: {fileID: 7016015220842267479}
@@ -535,7 +534,7 @@ Animator:
   m_GameObject: {fileID: 889614286596991420}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ee5b4be76dc64564ca28329f077f16b8, type: 2}
-  m_Controller: {fileID: 9100000, guid: c25d0eaa9cc0b3e48bee6c7cbf937a67, type: 2}
+  m_Controller: {fileID: 9100000, guid: f5248f05624463e4db81a8b35ac98aa7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -654,16 +653,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b38e4bc919e1f040ba78aea7472893e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: Cia
+  characterName: CIA
   characterID: 479ceb76-21ce-11f0-af55-42010a7be01a
   sessionID: -1
-  isCharacterActive: 0
-  actionsHandler: {fileID: 0}
-  convaiLipSync: {fileID: 0}
   isCharacterTalking: 0
-  initializeSessionID: 0
+  isCharacterActive: 0
   playerInteractionManager: {fileID: 0}
-  narrativeDesignManager: {fileID: 0}
   onTriggerSent:
     m_PersistentCalls:
       m_Calls: []
@@ -839,21 +834,6 @@ MonoBehaviour:
     triggerMessage: Welcome to Edifyer.io
     destinationSection: eac75320-2243-11f0-99c7-42010a7be01a
     characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
---- !u!114 &7606302864135197523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 889614286596991420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 004880e93e7151e479613b64df017303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  targetDistanceThreshold: 1
-  rotationSpeed: 30
 --- !u!114 &9024694524144705352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -880,12 +860,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 889614286596991420}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b64bad04a93295642a4486f9899f8734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faceSkinnedMeshRenderer: {fileID: 0}
+  faceSkinnedMeshRenderer: {fileID: 6065367295179167589}
   indexOfLeftEyelid: 65
   indexOfRightEyelid: 66
   maxBlendshapeWeight: 1
@@ -1024,9 +1004,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d526d030017744949b7412a85e6134d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  narrativeDesignKeys:
-  - name: TimeOfDay
-    value: Morning
+  narrativeDesignKeyController:
+    narrativeDesignKeys: []
 --- !u!1 &1106836875575516348
 GameObject:
   m_ObjectHideFlags: 0
@@ -2134,7 +2113,7 @@ GameObject:
   - component: {fileID: 3230811085179830836}
   - component: {fileID: 6532889697568134775}
   m_Layer: 0
-  m_Name: Cia
+  m_Name: CIA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

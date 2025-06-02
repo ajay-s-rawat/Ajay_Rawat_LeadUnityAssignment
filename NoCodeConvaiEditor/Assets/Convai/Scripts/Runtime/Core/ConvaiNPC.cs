@@ -1,501 +1,293 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Convai.Scripts.Runtime.Addons;
 using Convai.Scripts.Runtime.Attributes;
 using Convai.Scripts.Runtime.Features;
-using Convai.Scripts.Runtime.LoggerSystem;
-using Convai.Scripts.Runtime.PlayerStats;
 using Convai.Scripts.Runtime.UI;
-using Grpc.Core;
-using Service;
-using TMPro;
+using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEngine;
 using UnityEngine.Events;
-using ConvaiLipSync = Convai.Scripts.Runtime.Features.LipSync.ConvaiLipSync;
-#if UNITY_ANDROID
-using UnityEngine.Android;
-#endif
 
 namespace Convai.Scripts.Runtime.Core
 {
     /// <summary>
-    ///     The ConvaiNPC class is a MonoBehaviour script that gives a GameObject the ability to interact with the Convai API.
+    /// Represents a Convai Non-Player Character (NPC) in the scene.
+    /// Manages character data, state, core components, optional features, configuration flags,
+    /// interaction triggers, and links player input to the ConvaiGRPCWebAPI.
     /// </summary>
-    [RequireComponent(typeof(Animator), typeof(AudioSource))]
+    [RequireComponent(typeof(Animator))]
     [AddComponentMenu("Convai/ConvaiNPC")]
-    [HelpURL(
-        "https://docs.convai.com/api-docs/plugins-and-integrations/unity-plugin/overview-of-the-convainpc.cs-script")]
     public class ConvaiNPC : MonoBehaviour
     {
-        private const int AUDIO_SAMPLE_RATE = 44100;
-        private const string GRPC_API_ENDPOINT = "stream.convai.com";
-        private const int RECORDING_FREQUENCY = AUDIO_SAMPLE_RATE;
-        private const int RECORDING_LENGTH = 30;
-        private static readonly int Talk = Animator.StringToHash("Talk");
+        // Constants & Static Readonly
+        private static readonly int TalkAnimHash = Animator.StringToHash("Talk");
 
-        [Header("Character Information")] [Tooltip("Enter the character name for this NPC.")]
-        public string characterName;
+        [Header("Character Information")]
+        [Tooltip("Display name for this NPC.")]
+        public string characterName = "NPC Name";
+        [Tooltip("Unique Convai Character ID from the Convai")]
+        public string characterID = "";
+        [Tooltip("Current session ID for the conversation")]
+        [ReadOnly] public string sessionID = "-1";
 
-        [Tooltip("Enter the character ID for this NPC.")]
-        public string characterID;
+        [Header("State (Read Only)")]
+        [Tooltip("Is this character currently speaking?")]
+        [ReadOnly] public bool isCharacterTalking;
+        [Tooltip("Is this character the primary interaction target?")]
+        [ReadOnly] public bool isCharacterActive;
 
-        [Tooltip("The current session ID for the chat with this NPC.")] [ReadOnly]
-        public string sessionID = "-1";
-
-        [Tooltip("Is this character active?")] [ReadOnly]
-        public bool isCharacterActive;
-
-        [HideInInspector] public ConvaiActionsHandler actionsHandler;
-        [HideInInspector] public ConvaiLipSync convaiLipSync;
-
-        [Tooltip("Is this character talking?")] [SerializeField] [ReadOnly]
-        private bool isCharacterTalking;
-
-        [Header("Session Initialization")] [Tooltip("Enable/disable initializing session ID by sending a text request to the server")]
-        public bool initializeSessionID;
-
-        [HideInInspector] public ConvaiPlayerInteractionManager playerInteractionManager;
-        [HideInInspector] public NarrativeDesignManager narrativeDesignManager;
-        [HideInInspector] public TriggerUnityEvent onTriggerSent;
-        private readonly Queue<GetResponseResponse> _getResponseResponses = new();
-        private bool _animationPlaying;
-        private Channel _channel;
+        // Core Components
         private Animator _characterAnimator;
-        private ConvaiService.ConvaiServiceClient _client;
+
+        // API & Manager References
+        private ConvaiGRPCWebAPI _grpcWebAPI;
         private ConvaiChatUIHandler _convaiChatUIHandler;
         private ConvaiCrosshairHandler _convaiCrosshairHandler;
-        private ConvaiGroupNPCController _convaiGroupNPCController;
-        private ConvaiPlayerDataSO _convaiPlayerData;
-        private TMP_InputField _currentInputField;
-        private bool _groupNPCComponentNotFound;
-        private ConvaiGRPCAPI _grpcAPI;
-        private bool _isActionActive;
-        private bool _isLipSyncActive;
-        private bool _stopAudioPlayingLoop;
-        private bool _stopHandlingInput;
-        private Coroutine _processResponseCoroutine;
-        public ActionConfig ActionConfig;
 
-        private bool IsInConversationWithAnotherNPC
-        {
-            get
-            {
-                if (_groupNPCComponentNotFound) return false;
-                if (_convaiGroupNPCController == null)
-                {
-                    if (TryGetComponent(out ConvaiGroupNPCController component))
-                        _convaiGroupNPCController = component;
-                    else
-                        _groupNPCComponentNotFound = true;
-                }
+        [HideInInspector] public ConvaiPlayerInteractionManager playerInteractionManager;
 
-                return _convaiGroupNPCController != null && _convaiGroupNPCController.IsInConversationWithAnotherNPC;
-            }
-        }
+        #region Feature Components & Configuration Flags
 
-        private string SpeakerID
-        {
-            get
-            {
-                if (_convaiPlayerData == null) return string.Empty;
-                return _convaiPlayerData.SpeakerID;
-            }
-        }
+        public ConvaiLipSync LipSync { get; private set; }
+        public NarrativeDesignManager NarrativeDesignManager { get; private set; }
+        public ConvaiActionsHandler ActionsHandler { get; private set; }
+        public NarrativeDesignKeyController NarrativeDesignKeyController { get; private set; }
 
-        public bool IsCharacterTalking
-        {
-            get => isCharacterTalking;
-            private set => isCharacterTalking = value;
-        }
+        // --- Internal State Flags ---
+        private bool _animationPlaying;
+        private bool _isLipSyncComponentActive;
 
-        private FaceModel FaceModel => convaiLipSync == null ? FaceModel.OvrModelName : convaiLipSync.faceModel;
+        // --- Configuration Flags ---
+        [Tooltip("Enable Actions feature handling for this NPC.")]
+        [field: NonSerialized] public bool enableActionsHandler { get; set; }
 
-        public string GetEndPointURL => GRPC_API_ENDPOINT;
+        [Tooltip("Enable LipSync feature for this NPC.")]
+        [field: NonSerialized] public bool enableLipSync { get; set; }
 
-        // Properties with getters and setters
-        [field: NonSerialized] public bool IncludeActionsHandler { get; set; }
-        [field: NonSerialized] public bool LipSync { get; set; }
-        [field: NonSerialized] public bool HeadEyeTracking { get; set; }
-        [field: NonSerialized] public bool EyeBlinking { get; set; }
-        [field: NonSerialized] public bool NarrativeDesignManager { get; set; }
-        [field: NonSerialized] public bool ConvaiGroupNPCController { get; set; }
-        [field: NonSerialized] public bool LongTermMemoryController { get; set; }
-        [field: NonSerialized] public bool NarrativeDesignKeyController { get; set; }
-        [field: NonSerialized] public bool DynamicInfoController { get; set; }
+        [Tooltip("Enable Narrative Design Manager feature for this NPC.")]
+        [field: NonSerialized] public bool enableNarrativeDesignManager { get; set; }
 
-        public ConvaiNPCAudioManager AudioManager { get; private set; }
+        [Tooltip("Enable Narrative Design Key Controller feature for this NPC.")]
+        [field: NonSerialized] public bool enableNarrativeDesignKeyController { get; set; }
+
+        [Tooltip("Enable Head & Eye Tracking feature for this NPC.")]
+        [field: NonSerialized] public bool enableHeadEyeTracking { get; set; }
+
+        [Tooltip("Enable automatic eye blinking feature for this NPC.")]
+        [field: NonSerialized] public bool enableEyeBlinking { get; set; }
+
+        #endregion
+
+        #region Unity Events
+        [Header("Events")]
+        [Tooltip("UnityEvent invoked when a trigger message/event is sent FROM this NPC.")]
+        public TriggerUnityEvent onTriggerSent;
+        #endregion
+
+        #region Unity Lifecycle Methods
 
         private void Awake()
         {
-            ConvaiLogger.Info("Initializing ConvaiNPC : " + characterName, ConvaiLogger.LogCategory.Character);
-            InitializeComponents();
-            ConvaiLogger.Info("ConvaiNPC component initialized", ConvaiLogger.LogCategory.Character);
+            // Get essential components
+            _characterAnimator = GetComponent<Animator>();
+            if (_characterAnimator == null)
+                ConvaiLogger.Error("Missing required Animator component!", ConvaiLogger.LogCategory.Character, this);
+
+            // Find scene components
+            _convaiChatUIHandler = FindObjectOfType<ConvaiChatUIHandler>();
+            _convaiCrosshairHandler = FindObjectOfType<ConvaiCrosshairHandler>();
+
+            // Ensure the PlayerInteractionManager component exists and initialize it
+            InitializePlayerInteractionManager();
+
+            // Dynamically find and assign optional feature components to public properties
+            _isLipSyncComponentActive = TryGetComponent(out ConvaiLipSync lipSyncRef); // Check if component exists
+            if (_isLipSyncComponentActive) LipSync = lipSyncRef; // Assign if found
+
+            if (TryGetComponent(out NarrativeDesignManager narrativeDesignManager)) NarrativeDesignManager = narrativeDesignManager;
+            if (TryGetComponent(out ConvaiActionsHandler actionsHandler)) ActionsHandler = actionsHandler;
+            if (TryGetComponent(out NarrativeDesignKeyController narrativeDesignKeyController)) NarrativeDesignKeyController = narrativeDesignKeyController;
         }
 
-        private async void Start()
+        private void Start()
         {
-            // Assign the ConvaiGRPCAPI component in the scene
-            _grpcAPI = ConvaiGRPCAPI.Instance;
-
-
-            // Check if the platform is Android
-#if UNITY_ANDROID
-            // Check if the user has not authorized microphone permission
-            if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
-                // Request microphone permission from the user
-                Permission.RequestUserPermission(Permission.Microphone);
-#endif
-            // DO NOT EDIT
-            // gRPC setup configuration 
-
-            #region GRPC_SETUP
-
-            SslCredentials credentials = new(); // Create SSL credentials for secure communication
-            _channel = new Channel(GRPC_API_ENDPOINT, credentials); // Initialize a gRPC channel with the specified endpoint and credentials
-            _client = new ConvaiService.ConvaiServiceClient(_channel); // Initialize the gRPC client for the ConvaiService using the channel
-
-            #endregion
-
-            if (initializeSessionID) sessionID = await ConvaiGRPCAPI.InitializeSessionIDAsync(characterName, _client, characterID, sessionID);
-            _convaiChatUIHandler = ConvaiChatUIHandler.Instance;
+            // Assign the singleton GRPC API instance
+            _grpcWebAPI = ConvaiGRPCWebAPI.Instance;
+            if (_grpcWebAPI == null)
+            {
+                ConvaiLogger.Error($"{nameof(ConvaiGRPCWebAPI)} instance not found! Interactions will fail. Disabling component.", ConvaiLogger.LogCategory.Character, this);
+                enabled = false; return;
+            }
+            // Subscribe to the global speaking status change event.
+            SubscribeToSpeakingChanges();
         }
 
         private void OnEnable()
         {
-            AudioManager.OnCharacterTalkingChanged += HandleIsCharacterTalkingAnimation;
-            AudioManager.OnAudioTranscriptAvailable += HandleAudioTranscriptAvailable;
-            AudioManager.OnCharacterTalkingChanged += SetCharacterTalking;
-
-            ConvaiNPCManager.Instance.OnActiveNPCChanged += HandleActiveNPCChanged;
-
-            if (_convaiChatUIHandler != null) _convaiChatUIHandler.UpdateCharacterList();
-            _processResponseCoroutine = StartCoroutine(ProcessResponseCoroutine());
+            _convaiChatUIHandler ??= ConvaiChatUIHandler.Instance;
+            _convaiChatUIHandler?.UpdateCharacterList();
+            SubscribeToSpeakingChanges();
         }
 
         private void OnDisable()
         {
-            if (AudioManager != null)
+            InterruptCharacterSpeech();
+            UnsubscribeFromSpeakingChanges();
+            _convaiChatUIHandler?.UpdateCharacterList();
+            if (isCharacterTalking) { ForceStopLocalPlaybackAndAnimation(); }
+            _animationPlaying = false;
+            if (_characterAnimator != null) _characterAnimator.SetBool(TalkAnimHash, false);
+        }
+
+        private void SubscribeToSpeakingChanges()
+        {
+            if (_grpcWebAPI != null)
             {
-                AudioManager.OnCharacterTalkingChanged -= HandleIsCharacterTalkingAnimation;
-                AudioManager.OnAudioTranscriptAvailable -= HandleAudioTranscriptAvailable;
-                AudioManager.OnCharacterTalkingChanged -= SetCharacterTalking;
-                AudioManager.PurgeExcessLipSyncFrames -= PurgeLipSyncFrames;
-            }
-
-            ConvaiNPCManager.Instance.OnActiveNPCChanged -= HandleActiveNPCChanged;
-
-            if (_convaiChatUIHandler != null) _convaiChatUIHandler.UpdateCharacterList();
-            if (_processResponseCoroutine != null) StopCoroutine(_processResponseCoroutine);
-        }
-
-        /// <summary>
-        ///     Unity callback that is invoked when the application is quitting.
-        ///     Stops the loop that plays audio in order.
-        /// </summary>
-        private void OnApplicationQuit()
-        {
-            AudioManager.StopAudioLoop();
-        }
-
-        private void OnValidate()
-        {
-            if (!string.IsNullOrEmpty(characterID)) characterID = characterID.Trim();
-            _convaiChatUIHandler = ConvaiChatUIHandler.Instance;
-            if (_convaiChatUIHandler != null) _convaiChatUIHandler.UpdateCharacterList();
-        }
-
-        public async void TriggerEvent(string triggerName)
-        {
-            string triggerMessage = "";
-            TriggerConfig trigger = new()
-            {
-                TriggerName = triggerName,
-                TriggerMessage = triggerMessage
-            };
-
-            // Send the trigger to the server using GRPC
-            await ConvaiGRPCAPI.Instance.SendTriggerData(_client, characterID, trigger, this);
-
-            // Invoke the UnityEvent
-            onTriggerSent.Invoke(triggerMessage, triggerName);
-        }
-        
-        public async void TriggerSpeech(string triggerMessage)
-        {
-            string triggerName = "";
-            TriggerConfig trigger = new()
-            {
-                TriggerName = triggerName,
-                TriggerMessage = triggerMessage
-            };
-
-            // Send the trigger to the server using GRPC
-            await ConvaiGRPCAPI.Instance.SendTriggerData(_client, characterID, trigger, this);
-
-            // Invoke the UnityEvent
-            onTriggerSent.Invoke(triggerMessage, triggerName);
-        }
-
-        private event Action<bool> OnCharacterTalking;
-
-        private void UpdateWaitUntilLipSync(bool value)
-        {
-            AudioManager.SetWaitForCharacterLipSync(value);
-        }
-
-        private void HandleActiveNPCChanged(ConvaiNPC newActiveNPC)
-        {
-            // If this NPC is no longer the active NPC, interrupt its speech
-            if (this != newActiveNPC && !IsInConversationWithAnotherNPC && ConvaiInputManager.Instance.IsTalkKeyHeld) InterruptCharacterSpeech();
-        }
-
-
-        private void InitializeComponents()
-        {
-            _convaiChatUIHandler = FindObjectOfType<ConvaiChatUIHandler>();
-            _convaiCrosshairHandler = FindObjectOfType<ConvaiCrosshairHandler>();
-            _characterAnimator = GetComponent<Animator>();
-            AudioManager = gameObject.AddComponent<ConvaiNPCAudioManager>();
-            narrativeDesignManager = GetComponent<NarrativeDesignManager>();
-            ConvaiPlayerDataSO.GetPlayerData(out _convaiPlayerData);
-            InitializePlayerInteractionManager();
-            InitializeLipSync();
-            StartCoroutine(InitializeActionsHandler());
-        }
-
-
-        private IEnumerator InitializeActionsHandler()
-        {
-            yield return new WaitForSeconds(1);
-            actionsHandler = GetComponent<ConvaiActionsHandler>();
-            if (actionsHandler != null)
-            {
-                _isActionActive = true;
-                ActionConfig = actionsHandler.ActionConfig;
+                _grpcWebAPI.OnCharacterSpeakingChanged += HandleCharacterSpeakingStatusChanged;
             }
         }
 
-        private void InitializePlayerInteractionManager()
+        private void UnsubscribeFromSpeakingChanges()
         {
-            playerInteractionManager = gameObject.AddComponent<ConvaiPlayerInteractionManager>();
-            playerInteractionManager.Initialize(this, _convaiCrosshairHandler, _convaiChatUIHandler);
+            if (_grpcWebAPI != null) { _grpcWebAPI.OnCharacterSpeakingChanged -= HandleCharacterSpeakingStatusChanged; }
         }
 
-        private void InitializeLipSync()
+        #endregion
+
+        #region Public Interaction API Methods
+
+        /// <summary> Starts voice input recording via GRPC API after interrupting self. </summary>
+        public void StartListening()
         {
-            convaiLipSync = GetComponent<ConvaiLipSync>();
-            if (convaiLipSync != null)
-            {
-                _isLipSyncActive = true;
-                convaiLipSync = GetComponent<ConvaiLipSync>();
-                convaiLipSync.OnCharacterLipSyncing += UpdateWaitUntilLipSync;
-            }
+            if (_grpcWebAPI == null) { ConvaiLogger.Warn($"Cannot {nameof(StartListening)}: API instance missing.", ConvaiLogger.LogCategory.Character, this); return; }
+            InterruptCharacterSpeech();
+            _grpcWebAPI.RequestStartRecordAudio();
         }
 
-        private void HandleAudioTranscriptAvailable(string transcript)
-        {
-            if (isCharacterActive) _convaiChatUIHandler.SendCharacterText(characterName, transcript);
-        }
-
-        /// <summary>
-        ///     Handles the character's talking animation based on whether the character is currently talking.
-        /// </summary>
-        private void HandleIsCharacterTalkingAnimation(bool isTalking)
-        {
-            if (isTalking)
-            {
-                if (!_animationPlaying)
-                {
-                    _animationPlaying = true;
-                    _characterAnimator.SetBool(Talk, true);
-                }
-            }
-            else
-            {
-                _animationPlaying = false;
-                _characterAnimator.SetBool(Talk, false);
-            }
-        }
-
-        /// <summary>
-        ///     Sends message data to the server asynchronously.
-        /// </summary>
-        /// <param name="text">The message to send.</param>
-        public async void SendTextDataAsync(string text)
-        {
-            try
-            {
-                await ConvaiGRPCAPI.Instance.SendTextData(_client, text, characterID,
-                    _isActionActive, _isLipSyncActive, ActionConfig, FaceModel, SpeakerID);
-            }
-            catch (Exception ex)
-            {
-                ConvaiLogger.Error(ex, ConvaiLogger.LogCategory.Character);
-                // Handle the exception, e.g., show a message to the user.
-            }
-        }
-
-        /// <summary>
-        ///     Initializes the session in an asynchronous manner and handles the receiving of results from the server.
-        ///     Initiates the audio recording process using the gRPC API.
-        /// </summary>
-        public async void StartListening()
-        {
-            if (!MicrophoneManager.Instance.HasAnyMicrophoneDevices())
-            {
-                NotificationSystemHandler.Instance.NotificationRequest(NotificationType.NoMicrophoneDetected);
-                return;
-            }
-
-            await _grpcAPI.StartRecordAudio(_client, _isActionActive, _isLipSyncActive, RECORDING_FREQUENCY,
-                RECORDING_LENGTH, characterID, ActionConfig, FaceModel, SpeakerID);
-        }
-
-        /// <summary>
-        ///     Stops the ongoing audio recording process.
-        /// </summary>
+        /// <summary> Stops voice input recording via GRPC API. </summary>
         public void StopListening()
         {
-            // Stop the audio recording process using the ConvaiGRPCAPI StopRecordAudio method
-            _grpcAPI.StopRecordAudio();
+            if (_grpcWebAPI == null) { ConvaiLogger.Warn($"Cannot {nameof(StopListening)}: API instance missing.", ConvaiLogger.LogCategory.Character, this); return; }
+            _grpcWebAPI.RequestStopRecordAudio();
         }
 
-        /// <summary>
-        ///     Add response to the GetResponseResponse Queue
-        /// </summary>
-        /// <param name="response"></param>
-        public void EnqueueResponse(GetResponseResponse response)
+        /// <summary> Sends text input via GRPC API. </summary>
+        public void SendTextData(string text)
         {
-            if (response?.AudioResponse == null) return;
-            //ConvaiLogger.DebugLog($"Adding Response for Processing: {response.AudioResponse.TextData}", ConvaiLogger.LogCategory.LipSync);
-            _getResponseResponses.Enqueue(response);
+            if (_grpcWebAPI == null) { ConvaiLogger.Warn($"Cannot {nameof(SendTextData)}: API instance missing.", ConvaiLogger.LogCategory.Character, this); return; }
+            if (string.IsNullOrWhiteSpace(text)) { ConvaiLogger.Warn("Attempted to send empty text data.", ConvaiLogger.LogCategory.Character, this); return; }
+            _grpcWebAPI.RequestSendTextData(text);
         }
 
-        public void ClearResponseQueue()
+        /// <summary> Sends a named trigger event via GRPC API and invokes local event. </summary>
+        public void TriggerEvent(string triggerName)
         {
-            _getResponseResponses.Clear();
+            if (_grpcWebAPI == null) { ConvaiLogger.Warn($"Cannot {nameof(TriggerEvent)}: API instance missing.", ConvaiLogger.LogCategory.Character, this); return; }
+            if (string.IsNullOrEmpty(triggerName)) { ConvaiLogger.Warn($"{nameof(TriggerEvent)} called with empty trigger name.", ConvaiLogger.LogCategory.Character, this); }
+            TriggerConfig triggerConfig = new() { TriggerName = triggerName, TriggerMessage = "" };
+            _grpcWebAPI.SendTriggerConfig(triggerConfig);
+            onTriggerSent?.Invoke(triggerConfig.TriggerMessage, triggerConfig.TriggerName);
         }
 
-        private void PurgeLipSyncFrames()
+        /// <summary> Sends a trigger message (for speech/action) via GRPC API and invokes local event. </summary>
+        public void TriggerSpeech(string triggerMessage)
         {
-            if (convaiLipSync == null) return;
-            convaiLipSync.PurgeExcessFrames();
-        }
-        
-        private IEnumerator ProcessResponseCoroutine()
-        {
-            while (gameObject.activeInHierarchy)
-            {
-                ProcessResponse();
-                yield return new WaitForSeconds(1f/100f);
-            }
+            if (_grpcWebAPI == null) { ConvaiLogger.Warn($"Cannot {nameof(TriggerSpeech)}: API instance missing.", ConvaiLogger.LogCategory.Character, this); return; }
+            if (string.IsNullOrEmpty(triggerMessage)) { ConvaiLogger.Warn($"{nameof(TriggerSpeech)} called with empty trigger message.", ConvaiLogger.LogCategory.Character, this); }
+            TriggerConfig triggerConfig = new() { TriggerName = "", TriggerMessage = triggerMessage };
+            _grpcWebAPI.SendTriggerConfig(triggerConfig);
+            onTriggerSent?.Invoke(triggerConfig.TriggerMessage, triggerConfig.TriggerName);
         }
 
-        /// <summary>
-        ///     Processes a response fetched from a character.
-        /// </summary>
-        /// <remarks>
-        ///     1. Processes audio/message/face data from the response and adds it to _responseAudios.
-        ///     2. Identifies actions from the response and parses them for execution.
-        /// </remarks>
-        private void ProcessResponse()
-        {
-            // Check if the character is active and should process the response
-            if (isCharacterActive || IsInConversationWithAnotherNPC)
-                if (_getResponseResponses.Count > 0)
-                {
-                    GetResponseResponse getResponseResponse = _getResponseResponses.Dequeue();
 
-                    if (getResponseResponse?.AudioResponse != null)
-                    {
-                        // Check if text data exists in the response
-                        if (getResponseResponse.AudioResponse.AudioData.ToByteArray().Length > 46)
-                        {
-                            // Initialize empty string for text
-                            string textDataString = getResponseResponse.AudioResponse.TextData;
-
-                            byte[] byteAudio = getResponseResponse.AudioResponse.AudioData.ToByteArray();
-
-                            AudioClip clip = AudioManager.ProcessByteAudioDataToAudioClip(byteAudio,
-                                getResponseResponse.AudioResponse.AudioConfig.SampleRateHertz.ToString());
-
-                            // Add the response audio along with associated data to the list
-                            AudioManager.AddResponseAudio(new ConvaiNPCAudioManager.ResponseAudio
-                            {
-                                AudioClip = clip,
-                                AudioTranscript = textDataString,
-                                IsFinal = false
-                            });
-                        }
-                        else if (getResponseResponse.AudioResponse.EndOfResponse)
-                        {
-                            ConvaiLogger.DebugLog("We have received end of response", ConvaiLogger.LogCategory.LipSync);
-                            // Handle the case where there is a DebugLog but no audio response
-                            AudioManager.AddResponseAudio(new ConvaiNPCAudioManager.ResponseAudio
-                            {
-                                AudioClip = null,
-                                AudioTranscript = null,
-                                IsFinal = true
-                            });
-                        }
-                    }
-                }
-        }
-
-        public int GetAudioResponseCount()
-        {
-            return AudioManager.GetAudioResponseCount();
-        }
-
-        public void StopAllAudioPlayback()
-        {
-            AudioManager.StopAllAudioPlayback();
-            AudioManager.ClearResponseAudioQueue();
-        }
-
-        public void ResetCharacterAnimation()
-        {
-            if (_characterAnimator != null)
-                _characterAnimator.SetBool(Talk, false);
-
-            if (convaiLipSync != null)
-                convaiLipSync.ConvaiLipSyncApplicationBase.ClearQueue();
-        }
-
-        public void SetCharacterTalking(bool isTalking)
-        {
-            if (IsCharacterTalking != isTalking)
-            {
-                ConvaiLogger.Info($"Character {characterName} is talking: {isTalking}", ConvaiLogger.LogCategory.Character);
-                IsCharacterTalking = isTalking;
-                OnCharacterTalking?.Invoke(IsCharacterTalking);
-            }
-        }
-
-        public void StopLipSync()
-        {
-            if (convaiLipSync != null) convaiLipSync.StopLipSync();
-        }
-
+        /// <summary> Interrupts character speech locally and requests interruption via GRPC API. </summary>
         public void InterruptCharacterSpeech()
         {
-            _grpcAPI.InterruptCharacterSpeech(this);
+            if (!isCharacterTalking) return;
+            ConvaiLogger.Info("Interrupting speech.", ConvaiLogger.LogCategory.Character, this);
+            isCharacterTalking = false;
+            StopAllCoroutines();
+            _grpcWebAPI?.InterruptCharacterSpeech();
+            // Local cleanup
+            StopLipSyncIfActive();
+            HandleCharacterTalkingAnimation(false);
+            _animationPlaying = false;
         }
 
-        public ConvaiService.ConvaiServiceClient GetClient()
+        /// <summary> Forcefully stops lipsync and resets animation state. </summary>
+        public void ForceStopLocalPlaybackAndAnimation()
         {
-            return _client;
+            StopLipSyncIfActive();
+            HandleCharacterTalkingAnimation(false);
+            isCharacterTalking = false;
+            _animationPlaying = false;
         }
 
-        public void UpdateSessionID(string newSessionID)
+        #endregion
+
+        #region Internal State, Feature Handling & Helpers
+
+        /// <summary> Stops LipSync using the public component reference if active. </summary>
+        private void StopLipSyncIfActive()
         {
-            sessionID = newSessionID;
+            if (_isLipSyncComponentActive && LipSync != null)
+            {
+                LipSync.StopLipSync();
+            }
         }
 
+        /// <summary>
+        /// Handles the global talking status update from ConvaiGRPCWebAPI.
+        /// Updates state/animation only if the event is for this NPC instance.
+        /// </summary>
+        private void HandleCharacterSpeakingStatusChanged(bool isNowTalking)
+        {
+            if (_grpcWebAPI != null && _grpcWebAPI.CurrentInteractingNPC == this)
+            {
+                if (isCharacterTalking != isNowTalking)
+                {
+                    isCharacterTalking = isNowTalking;
+                    HandleCharacterTalkingAnimation(isNowTalking);
+                }
+            }
+        }
+
+        /// <summary> Manages the Animator's 'Talk' parameter based on speaking status. </summary>
+        private void HandleCharacterTalkingAnimation(bool shouldTalk)
+        {
+            if (_characterAnimator == null) return;
+            if (shouldTalk && !_animationPlaying)
+            {
+                _animationPlaying = true; _characterAnimator.SetBool(TalkAnimHash, true);
+            }
+            else if (!shouldTalk && _animationPlaying)
+            {
+                _animationPlaying = false; _characterAnimator.SetBool(TalkAnimHash, false);
+            }
+            else if (!shouldTalk && _characterAnimator.GetBool(TalkAnimHash))
+            { _characterAnimator.SetBool(TalkAnimHash, false); }
+        }
+
+        /// <summary> Ensures the ConvaiPlayerInteractionManager component exists and initializes it. </summary>
+        private void InitializePlayerInteractionManager()
+        {
+            playerInteractionManager = GetComponent<ConvaiPlayerInteractionManager>();
+            if (playerInteractionManager == null)
+                playerInteractionManager = gameObject.AddComponent<ConvaiPlayerInteractionManager>();
+            _convaiCrosshairHandler ??= FindFirstObjectByType<ConvaiCrosshairHandler>();
+            _convaiChatUIHandler ??= ConvaiChatUIHandler.Instance;
+            try { playerInteractionManager.Initialize(this, _convaiCrosshairHandler, _convaiChatUIHandler); }
+            catch (Exception e) { ConvaiLogger.Error($"Failed to initialize {nameof(ConvaiPlayerInteractionManager)}: {e.Message}", ConvaiLogger.LogCategory.Character, this); }
+        }
+
+        #endregion // Internal State & Helpers Ends
+
+        #region Nested Classes & Events
+
+        /// <summary> Defines a UnityEvent for triggers, accepting message and name strings. </summary>
         [Serializable]
-        public class TriggerUnityEvent : UnityEvent<string, string>
-        {
-        }
+        public class TriggerUnityEvent : UnityEvent<string, string> { }
+
+        #endregion // Nested Classes & Events Ends
+
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Convai.Scripts.Runtime.Core;
 using Convai.Scripts.Runtime.LoggerSystem;
 using Newtonsoft.Json;
@@ -25,33 +24,41 @@ namespace Convai.Scripts.Runtime.Features
         private NarrativeDesignAPI NarrativeDesignAPI => _narrativeDesignAPI ??= new NarrativeDesignAPI();
         private ConvaiNPC ConvaiNpc => _convaiNpc ??= GetComponent<ConvaiNPC>();
         private string CharacterID => ConvaiNpc.characterID;
-
-        private async void Awake()
+        
+        private void Awake()
         {
             _convaiNpc = GetComponent<ConvaiNPC>();
-            await Task.WhenAll(UpdateSectionListAsync(), UpdateTriggerListAsync());
+            StartCoroutine(UpdateDataListsCoroutine());
         }
-
-        private async void Reset()
+        private void Reset()
         {
-            await Task.WhenAll(UpdateSectionListAsync(), UpdateTriggerListAsync());
+            StartCoroutine(UpdateDataListsCoroutine());
+        }
+        private void ConvaiWebGLCommunicationHandler_OnNPCBTResponseReceived(string narrativeSectionId)
+        {
+            Debug.Log("NarrativeDesignManager: ConvaiWebGLCommunicationHandler_OnNPCBTResponseReceived: " + narrativeSectionId);
+            UpdateCurrentSection(narrativeSectionId);
+        }
+        private IEnumerator UpdateDataListsCoroutine()
+        {
+            yield return StartCoroutine(UpdateSectionListCoroutine());
+            yield return StartCoroutine(UpdateTriggerListCoroutine());
         }
 
         /// <summary>
         ///     Updates the section list from the server.
         /// </summary>
-        public async Task UpdateSectionListAsync()
+        public IEnumerator UpdateSectionListCoroutine()
         {
-            List<SectionData> updatedSectionList = await GetSectionListFromServerAsync();
-            UpdateSectionDataList(updatedSectionList);
+            yield return StartCoroutine(GetSectionListFromServerCoroutine());
         }
 
         /// <summary>
         ///     Updates the trigger list from the server.
         /// </summary>
-        public async Task UpdateTriggerListAsync()
+        public IEnumerator UpdateTriggerListCoroutine()
         {
-            await ListTriggersAsync(CharacterID);
+            yield return StartCoroutine(ListTriggersCoroutine(CharacterID));
         }
 
         /// <summary>
@@ -59,40 +66,43 @@ namespace Convai.Scripts.Runtime.Features
         /// </summary>
         public void OnSectionEventListChange()
         {
-            foreach (SectionChangeEventsData sectionChangeEventsData in sectionChangeEventsDataList) sectionChangeEventsData.Initialize(this);
+            foreach (SectionChangeEventsData sectionChangeEventsData in sectionChangeEventsDataList)
+                sectionChangeEventsData.Initialize(this);
         }
 
-        private async Task<List<SectionData>> GetSectionListFromServerAsync()
+        private IEnumerator GetSectionListFromServerCoroutine()
         {
-            try
+            yield return StartCoroutine(NarrativeDesignAPI.ListSectionsCoroutine(CharacterID, sections =>
             {
-                string sections = await NarrativeDesignAPI.ListSectionsAsync(CharacterID);
-                return JsonConvert.DeserializeObject<List<SectionData>>(sections);
-            }
-            catch (Exception e)
-            {
-                ConvaiLogger.Error($"Please setup API Key properly. FormatException occurred: {e.Message}", ConvaiLogger.LogCategory.Character);
-                throw;
-            }
+                if (sections != null)
+                {
+                    List<SectionData> updatedSectionList = JsonConvert.DeserializeObject<List<SectionData>>(sections);
+                    UpdateSectionDataList(updatedSectionList);
+                }
+                else
+                {
+                    ConvaiLogger.Error("Failed to fetch section list", ConvaiLogger.LogCategory.Character);
+                }
+            }));
         }
 
-        public event Action OnTriggersUpdated;
+        public event System.Action OnTriggersUpdated;
 
-        private async Task ListTriggersAsync(string characterId)
+        private IEnumerator ListTriggersCoroutine(string characterId)
         {
-            try
+            yield return StartCoroutine(NarrativeDesignAPI.GetTriggerListCoroutine(characterId, triggers =>
             {
-                string triggers = await NarrativeDesignAPI.GetTriggerListAsync(characterId);
-                triggerDataList = JsonConvert.DeserializeObject<List<TriggerData>>(triggers);
-                OnTriggersUpdated?.Invoke();
-            }
-            catch (FormatException e)
-            {
-                ConvaiLogger.Exception($"Format Exception occurred: {e.Message}", ConvaiLogger.LogCategory.Character);
-                throw;
-            }
+                if (triggers != null)
+                {
+                    triggerDataList = JsonConvert.DeserializeObject<List<TriggerData>>(triggers);
+                    OnTriggersUpdated?.Invoke();
+                }
+                else
+                {
+                    ConvaiLogger.Error("Failed to fetch trigger list", ConvaiLogger.LogCategory.Character);
+                }
+            }));
         }
-
 
         /// <summary>
         ///     Updates the current section.
@@ -139,16 +149,24 @@ namespace Convai.Scripts.Runtime.Features
             sectionDataList.RemoveAll(currentSection => !updatedSectionDictionary.ContainsKey(currentSection.sectionId));
 
             foreach (SectionData currentSection in sectionDataList.ToList())
+            {
                 if (updatedSectionDictionary.TryGetValue(currentSection.sectionId, out SectionData updatedSection))
                 {
                     currentSection.sectionName = updatedSection.sectionName;
                     currentSection.objective = updatedSection.objective;
                     updatedSectionDictionary.Remove(currentSection.sectionId);
                 }
+            }
 
-            foreach (SectionData newSection in updatedSectionDictionary.Values) sectionDataList.Add(newSection);
+            foreach (SectionData newSection in updatedSectionDictionary.Values)
+            {
+                sectionDataList.Add(newSection);
+            }
 
-            foreach (SectionChangeEventsData sectionChangeEvent in sectionChangeEventsDataList) sectionChangeEvent.Initialize(this);
+            foreach (SectionChangeEventsData sectionChangeEvent in sectionChangeEventsDataList)
+            {
+                sectionChangeEvent.Initialize(this);
+            }
         }
     }
 }

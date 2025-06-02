@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Convai.Scripts.Runtime.UI
 {
-    public abstract class UIUtilities
+    public class UIUtilities
     {
         /// <summary>
         ///     Checks and return if any input field is focused or not

@@ -17,7 +17,7 @@ namespace Convai.Scripts.Runtime.Addons
         NetworkReachabilityIssue,
 
         /// <summary>
-        ///     Indicates a notification when the user is not in proximity to initiate a conversation.
+        ///     Indicates a notification when the user is not in close proximity to initiate a conversation.
         /// </summary>
         NotCloseEnoughForConversation,
 
@@ -34,11 +34,6 @@ namespace Convai.Scripts.Runtime.Addons
         /// <summary>
         ///     Indicates that no API key was found.
         /// </summary>
-        APIKeyNotFound,
-
-        /// <summary>
-        ///     Indicates that usage limit for current plan has exceeded
-        /// </summary>
-        UsageLimitExceeded
+        APIKeyNotFound
     }
 }

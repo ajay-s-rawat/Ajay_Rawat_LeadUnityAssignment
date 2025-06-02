@@ -3,7 +3,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using ColorUtility = UnityEngine.ColorUtility;
 
 namespace Convai.Scripts.Runtime.UI
 {
@@ -13,15 +12,12 @@ namespace Convai.Scripts.Runtime.UI
     public class ChatBoxUI : ChatUIBase
     {
         private const int MAX_MESSAGES = 25;
-        [SerializeField] private GameObject _playerMessageObject, _characterMessageObject;
 
-        private readonly List<Message> _messageList = new();
-
-        private GameObject _chatPanel;
+        private List<Message> _messageList = new();
+        private GameObject _chatPanel, _textObject;
         private ScrollRect _chatScrollRect;
         private Speaker _currentSpeaker;
         private bool _isFirstMessage = true;
-        private bool _isNewMessage;
 
         /// <summary>
         ///     Initializes the chat UI with the specified prefab.
@@ -31,9 +27,12 @@ namespace Convai.Scripts.Runtime.UI
         {
             UIInstance = Instantiate(uiPrefab);
             _chatPanel = UIInstance.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).gameObject;
+            _textObject = _chatPanel.transform.GetChild(0).gameObject;
             _chatScrollRect = UIInstance.transform.GetChild(0).GetChild(0).GetComponent<ScrollRect>();
-            _isFirstMessage = true;
+            UIInstance.SetActive(false);
             _currentSpeaker = Speaker.Player;
+            _isFirstMessage = true;
+            _messageList = new List<Message>();
         }
 
         /// <summary>
@@ -63,12 +62,7 @@ namespace Convai.Scripts.Runtime.UI
         /// </summary>
         public void ClearUI()
         {
-            foreach (Message message in _messageList)
-            {
-                Destroy(message.SenderTextObject.gameObject);
-                Destroy(message.MessageTextObject.gameObject);
-            }
-
+            foreach (Message message in _messageList) Destroy(message.TextObject.gameObject);
             _messageList.Clear();
         }
 
@@ -110,7 +104,7 @@ namespace Convai.Scripts.Runtime.UI
         {
             if (_messageList.Count >= MAX_MESSAGES) DestroyOldestMessage();
 
-            CreateNewMessage(text, characterName, characterTextColor, false);
+            CreateNewMessage(text, characterName, characterTextColor);
         }
 
 
@@ -149,7 +143,7 @@ namespace Convai.Scripts.Runtime.UI
         {
             if (_messageList.Count >= MAX_MESSAGES) DestroyOldestMessage();
 
-            CreateNewMessage(text, playerName, playerTextColor, true);
+            CreateNewMessage(text, playerName, playerTextColor);
         }
 
 
@@ -162,16 +156,8 @@ namespace Convai.Scripts.Runtime.UI
         private void ReplaceExistingPlayerMessage(string playerName, string text, Color playerTextColor)
         {
             Message lastMessage = _messageList[^1];
-            lastMessage.MessageTextObject.text = text;
-            lastMessage.SenderTextObject.text = FormatSpeakerName(playerName, playerTextColor);
-
-            // RTL Update done due to text arriving after create message
-            // Once for every message
-            if (text != "" && _isNewMessage)
-            {
-                lastMessage.RTLUpdate();
-                _isNewMessage = false;
-            }
+            lastMessage.Text = text;
+            lastMessage.TextObject.text = FormatDialogueText(playerName, text, playerTextColor);
         }
 
 
@@ -184,13 +170,8 @@ namespace Convai.Scripts.Runtime.UI
             if (_messageList.Count > 0)
             {
                 Message lastMessage = _messageList[^1];
-                lastMessage.MessageTextObject.text += " " + text;
-
-                if (text != "" && _isNewMessage)
-                {
-                    lastMessage.RTLUpdate();
-                    _isNewMessage = false;
-                }
+                lastMessage.Text += " " + text;
+                lastMessage.TextObject.text += " " + text;
             }
         }
 
@@ -199,21 +180,22 @@ namespace Convai.Scripts.Runtime.UI
         /// </summary>
         private void ScrollToBottom()
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(_chatPanel.GetComponent<RectTransform>());
             Canvas.ForceUpdateCanvases();
             _chatScrollRect.verticalNormalizedPosition = 0f;
         }
 
+
         /// <summary>
-        ///     Formats the speaker name
+        ///     Formats the dialogue text.
         /// </summary>
         /// <param name="speakerName">Name of the speaker.</param>
+        /// <param name="text">Text of the dialogue message.</param>
         /// <param name="speakerColor">Color of the speaker's text.</param>
-        /// <returns>Formatted speaker's name with color tag.</returns>
-        private static string FormatSpeakerName(string speakerName, Color speakerColor)
+        /// <returns>Formatted dialogue text with color tag and speaker's name.</returns>
+        private static string FormatDialogueText(string speakerName, string text, Color speakerColor)
         {
             string speakerColorHtml = ColorUtility.ToHtmlStringRGB(speakerColor);
-            return $"<color=#{speakerColorHtml}>{speakerName}</color>";
+            return $"<b><color=#{speakerColorHtml}>{speakerName}</color></b>: {text}";
         }
 
 
@@ -222,8 +204,7 @@ namespace Convai.Scripts.Runtime.UI
         /// </summary>
         private void DestroyOldestMessage()
         {
-            Destroy(_messageList[0].SenderTextObject.gameObject);
-            Destroy(_messageList[0].MessageTextObject.gameObject);
+            Destroy(_messageList[0].TextObject.gameObject);
             _messageList.RemoveAt(0);
         }
 
@@ -234,28 +215,22 @@ namespace Convai.Scripts.Runtime.UI
         /// <param name="text">Text of the dialogue message.</param>
         /// <param name="speakerName">Name of the speaker.</param>
         /// <param name="speakerColor">Color of the speaker's text.</param>
-        /// <param name="isSpeakerPlayer"> Flag to check if the speaker is a player.</param>
-        private void CreateNewMessage(string text, string speakerName, Color speakerColor, bool isSpeakerPlayer)
+        private void CreateNewMessage(string text, string speakerName, Color speakerColor)
         {
-            _isNewMessage = true;
-
-            GameObject messageInstance = isSpeakerPlayer ? Instantiate(_playerMessageObject, _chatPanel.transform) : Instantiate(_characterMessageObject, _chatPanel.transform);
-            messageInstance.SetActive(true);
-
-            Transform container = messageInstance.transform.Find("Container");
-            Transform senderBox = container.Find("SenderBox");
-
             Message newMessage = new()
             {
-                SenderTextObject = senderBox.Find("Sender").GetComponent<TMP_Text>(),
-                MessageTextObject = container.Find("Message").GetComponent<TMP_Text>()
+                Text = text,
+                TextObject = Instantiate(_textObject, _chatPanel.transform).GetComponent<TMP_Text>()
             };
 
-            newMessage.SenderTextObject.text = FormatSpeakerName(speakerName, speakerColor);
-            newMessage.MessageTextObject.text = text;
+            // If the speaker is the player, disable the feedback icon
+            GameObject feedbackButtons = newMessage.TextObject.transform.GetChild(0).gameObject;
+            feedbackButtons.SetActive(_currentSpeaker == Speaker.Character);
 
+            newMessage.TextObject.text = FormatDialogueText(speakerName, text, speakerColor);
             _messageList.Add(newMessage);
         }
+
 
         /// <summary>
         ///     Enumeration of the possible speakers.
@@ -264,6 +239,15 @@ namespace Convai.Scripts.Runtime.UI
         {
             Player,
             Character
+        }
+
+        /// <summary>
+        ///     Class to keep track of individual chat messages.
+        /// </summary>
+        private class Message
+        {
+            public string Text { get; set; }
+            public TMP_Text TextObject { get; set; }
         }
     }
 }

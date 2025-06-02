@@ -1,5 +1,4 @@
 using System;
-using Convai.Scripts.Runtime.LoggerSystem;
 using UnityEngine;
 
 namespace Convai.Scripts.Runtime.UI
@@ -12,9 +11,9 @@ namespace Convai.Scripts.Runtime.UI
     public class UISaveLoadSystem : MonoBehaviour
     {
         private const string SELECTED_MICROPHONE_DEVICE_NUMBER = "SelectedMicrophoneDeviceNumber";
+        private const string PLAYER_NAME = "PlayerName";
         private const string UI_TYPE = "UIType";
         private const string NOTIFICATION_SYSTEM_ACTIVE_STATUS = "NotificationSystemActiveStatus";
-        private const string TRANSCRIPT_UI_ACTIVE_STATUS = "TranscriptUIActiveStatus";
 
         /// <summary>
         ///     Stores the UI type.
@@ -39,14 +38,14 @@ namespace Convai.Scripts.Runtime.UI
         public int SelectedMicrophoneDeviceNumber { get; set; }
 
         /// <summary>
+        ///     Stores the player's name.
+        /// </summary>
+        public string PlayerName { get; set; }
+
+        /// <summary>
         ///     Stores the status of the notification system.
         /// </summary>
         public bool NotificationSystemActiveStatus { get; set; }
-
-        /// <summary>
-        ///     Stores the status of the transcript UI.
-        /// </summary>
-        public bool TranscriptUIActiveStatus { get; set; }
 
         /// <summary>
         ///     Ensure there is only one instance of UISaveLoadSystem
@@ -56,7 +55,7 @@ namespace Convai.Scripts.Runtime.UI
             if (Instance != null)
             {
                 // Log a warning and destroy the duplicate instance
-                ConvaiLogger.Warn("There's More Than One UISaveLoadSystem", ConvaiLogger.LogCategory.UI);
+                Debug.Log("<color=red> There's More Than One UISaveLoadSystem </color> " + transform + " - " + Instance);
                 Destroy(gameObject);
                 return;
             }
@@ -91,14 +90,14 @@ namespace Convai.Scripts.Runtime.UI
             // Retrieve selected microphone device number from PlayerPrefs, use 0 as default if not found
             SelectedMicrophoneDeviceNumber = PlayerPrefs.GetInt(SELECTED_MICROPHONE_DEVICE_NUMBER, 0);
 
+            // Retrieve player name from PlayerPrefs, default to "Player" if not found
+            PlayerName = PlayerPrefs.GetString(PLAYER_NAME, "Player");
+
             // Retrieve UI type from PlayerPrefs, use 0 as default if not found
             UIType = (ConvaiChatUIHandler.UIType)PlayerPrefs.GetInt(UI_TYPE, 0);
 
             // Retrieve notification system status from PlayerPrefs, default to true if not found
             NotificationSystemActiveStatus = PlayerPrefs.GetInt(NOTIFICATION_SYSTEM_ACTIVE_STATUS, 1) == 1;
-
-            // Retrieve transcript UI status from PlayerPrefs, default to true if not found
-            TranscriptUIActiveStatus = PlayerPrefs.GetInt(TRANSCRIPT_UI_ACTIVE_STATUS, 1) == 1;
 
             // Invoke the OnLoad event to notify listeners that loading has completed
             OnLoad?.Invoke();
@@ -115,14 +114,14 @@ namespace Convai.Scripts.Runtime.UI
             // Save selected microphone device number to PlayerPrefs
             PlayerPrefs.SetInt(SELECTED_MICROPHONE_DEVICE_NUMBER, SelectedMicrophoneDeviceNumber);
 
+            // Save player name to PlayerPrefs
+            PlayerPrefs.SetString(PLAYER_NAME, PlayerName);
+
             // Save UI type to PlayerPrefs as an integer representation
             PlayerPrefs.SetInt(UI_TYPE, (int)UIType);
 
             // Save notification system status to PlayerPrefs as 1 or 0 (true or false)
             PlayerPrefs.SetInt(NOTIFICATION_SYSTEM_ACTIVE_STATUS, NotificationSystemActiveStatus ? 1 : 0);
-
-            // Save transcript UI status to PlayerPrefs as 1 or 0 (true or false)
-            PlayerPrefs.SetInt(TRANSCRIPT_UI_ACTIVE_STATUS, TranscriptUIActiveStatus ? 1 : 0);
         }
     }
 }

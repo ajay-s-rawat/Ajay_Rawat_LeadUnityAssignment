@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1616904196010011682}
   - component: {fileID: 4803772239942064502}
   m_Layer: 0
-  m_Name: Aira
+  m_Name: AIRA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,10 +133,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6070655338044660022}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2363795620659172934}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ad82ae8759e49034e838fcc705a8c1f8,
         type: 3}
@@ -155,6 +151,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 74480866631733389}
   m_SourcePrefab: {fileID: 100100000, guid: ad82ae8759e49034e838fcc705a8c1f8, type: 3}
+--- !u!137 &575796390203112384 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9051005867030159785, guid: ad82ae8759e49034e838fcc705a8c1f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 8819739280760707689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &3637181542522173652 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5197118176682910397, guid: ad82ae8759e49034e838fcc705a8c1f8,
@@ -177,7 +179,7 @@ Animator:
   m_GameObject: {fileID: 8549921115403724600}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ee5b4be76dc64564ca28329f077f16b8, type: 2}
-  m_Controller: {fileID: 9100000, guid: c25d0eaa9cc0b3e48bee6c7cbf937a67, type: 2}
+  m_Controller: {fileID: 9100000, guid: f5248f05624463e4db81a8b35ac98aa7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -296,16 +298,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b38e4bc919e1f040ba78aea7472893e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterName: Cia
-  characterID: 479ceb76-21ce-11f0-af55-42010a7be01a
+  characterName: AIRA
+  characterID: 35a2c95c-29b9-11f0-88ec-42010a7be01d
   sessionID: -1
-  isCharacterActive: 0
-  actionsHandler: {fileID: 0}
-  convaiLipSync: {fileID: 0}
   isCharacterTalking: 0
-  initializeSessionID: 0
+  isCharacterActive: 0
   playerInteractionManager: {fileID: 0}
-  narrativeDesignManager: {fileID: 0}
   onTriggerSent:
     m_PersistentCalls:
       m_Calls: []
@@ -481,21 +479,6 @@ MonoBehaviour:
     triggerMessage: Welcome to Edifyer.io
     destinationSection: eac75320-2243-11f0-99c7-42010a7be01a
     characterId: 479ceb76-21ce-11f0-af55-42010a7be01a
---- !u!114 &6070655338044660022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8549921115403724600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 004880e93e7151e479613b64df017303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  targetDistanceThreshold: 1
-  rotationSpeed: 30
 --- !u!114 &2363795620659172934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,12 +505,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8549921115403724600}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b64bad04a93295642a4486f9899f8734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faceSkinnedMeshRenderer: {fileID: 0}
+  faceSkinnedMeshRenderer: {fileID: 575796390203112384}
   indexOfLeftEyelid: 65
   indexOfRightEyelid: 66
   maxBlendshapeWeight: 1
@@ -666,9 +649,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d526d030017744949b7412a85e6134d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  narrativeDesignKeys:
-  - name: TimeOfDay
-    value: Morning
+  narrativeDesignKeyController:
+    narrativeDesignKeys: []
 --- !u!4 &9073833339767520642 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ad82ae8759e49034e838fcc705a8c1f8,
